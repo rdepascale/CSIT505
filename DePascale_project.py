@@ -5,7 +5,13 @@ Created on Tue Jun  2 15:31:36 2020
 
 @author: ryanrien
 """
-
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
+import operator
+# allows us to create more advanced sorting based on sublist element
+# sorted(list_name, key = operator.itemgetter(sublist element number)) <= ascending order
+# sorted(list_name, key = operator.itemgetter(sublist element number), reverse = True) <= descending order
 
 file_str = "datasets_25491_32521_SW_EpisodeV.txt"
 #file_str = "sw_v_temp.txt"
@@ -58,48 +64,78 @@ while True:
             i += 1
     except IndexError:                              # an IndexError means we have trimmed all non-unique entries, end the loop
         break
-'''    
+
+# graph data section
+# color codes sourced from
+# https://matplotlib.org/3.1.0/gallery/color/named_colors.html
+graph_colors = ['blue', 'orange', 'green', 'red', 'purple', 'brown', 'pink']
+line_values = sorted(list_tally, key = operator.itemgetter(1), reverse = True)
+word_values = sorted(list_tally, key = operator.itemgetter(2), reverse = True)
+graph_name_values = []
+graph_line_values = []
+graph_word_values = []
+# top 7 characters in line and word are the same, focus on them
+for i in range( 7 ):
+    graph_name_values.append(line_values[i][0])
+    graph_line_values.append(line_values[i][1])
+    graph_word_values.append(word_values[i][2]) 
+
 # graph adapted from
 # https://matplotlib.org/3.1.3/gallery/lines_bars_and_markers/barchart.html#sphx-glr-gallery-lines-bars-and-markers-barchart-py
-import matplotlib
-import matplotlib.pyplot as plt
-import numpy as np
 
-name_values = []
-line_values = []
-word_values = []
-for i in range( len(list_tally) ):
-    name_values.append(list_tally[i][0])
-    line_values.append(list_tally[i][1])
-    word_values.append(list_tally[i][2])'''
-'''
-x = np.arange(len(name_values))
+
+x = np.arange(len(graph_name_values))
 width = 0.35
 
-fig, ax = plt.subplots()
-rects1 = ax.bar(x - width/2, line_values, width, label = '# of lines')
-rects2 = ax.bar(x + width/2, word_values, width, label = '# of words')
+fig, ax = plt.subplots(dpi = 120)
+rects1 = ax.bar(x - width/2, graph_line_values, width, label = '# of lines')
+rects2 = ax.bar(x + width/2, graph_word_values, width, label = '# of words')
 
+# grouped bar graph
 ax.set_xlabel('Character Name')
 ax.set_title('Star Wars Episode V Lines and Words per Character')
 ax.set_xticks(x)
-ax.set_xticklabels(name_values)
+ax.set_xticklabels(graph_name_values)
 ax.legend()
 fig.tight_layout()
 fig = matplotlib.pyplot.gcf()
 fig.set_size_inches(11, 8.5)
-plt.xticks(rotation=90)
-plt.show()'''
-'''
-# set our x-axis as keys (letters) and y-axis as values (count)
-fig, ax = plt.subplots()
+plt.show()
+
+# word count graph
+fig, ax = plt.subplots(dpi = 120)
 ax.set_xlabel('Character Name')
-ax.set_title('Star Wars Episode V Lines and Words per Character')
-ax.set_xticklabels(name_values)
-ax.legend()
+ax.set_title('Star Wars Episode V Words per Character')
+ax.set_xticklabels(graph_name_values)
 fig.tight_layout()
 fig = matplotlib.pyplot.gcf()
 fig.set_size_inches(11, 8.5)
-plt.xticks(rotation=90)
-plt.bar(name_values, word_values, color='g')
-plt.show() # displays the histogram'''
+plt.bar(graph_name_values, graph_word_values, color = graph_colors)
+plt.show()
+
+# line count graph
+fig, ax = plt.subplots(dpi = 120)
+ax.set_xlabel('Character Name')
+ax.set_title('Star Wars Episode V Lines per Character')
+ax.set_xticklabels(graph_name_values)
+fig.tight_layout()
+fig = matplotlib.pyplot.gcf()
+fig.set_size_inches(11, 8.5)
+plt.bar(graph_name_values, graph_line_values, color = graph_colors)
+plt.show()
+
+
+# pie charts of data for top 7 characters based on word & line counts
+# adapted from
+# https://matplotlib.org/3.2.1/gallery/pie_and_polar_charts/pie_demo2.html#sphx-glr-gallery-pie-and-polar-charts-pie-demo2-py
+# https://matplotlib.org/3.2.1/gallery/subplots_axes_and_figures/subplots_demo.html
+    
+# make figure and axes
+fig, (ax1, ax2) = plt.subplots(2, 1, dpi = 120)
+fig.suptitle('Top 7 Speaking Characters Line Count & Word Count Share')
+ax1.set_xlabel('Share By Line Count')
+ax2.set_xlabel('Share By Word Count')
+ax1.pie(graph_line_values, labels = graph_name_values, autopct='%1.1f%%', shadow = True)
+ax2.pie(graph_word_values, labels = graph_name_values, autopct='%1.1f%%', shadow = True)
+fig.set_size_inches(11, 8.5)
+plt.show()
