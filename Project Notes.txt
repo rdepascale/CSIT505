@@ -39,6 +39,7 @@ TO-DO:
 - help prep word analysis by stripping any punctuation from list_lines
 - sentiment analysis:
 	- build arrays of positive & negative words:
+		- https://positivewordsresearch.com/list-of-positive-words/
 		- https://positivewordsresearch.com/list-of-negative-words/
 	- iterate through list_lines and any hits should be appended to list_tally
 	- append # of hits for pos/neg words and character name
