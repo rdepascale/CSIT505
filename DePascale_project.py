@@ -68,7 +68,7 @@ while True:
 # graph data section
 # color codes sourced from
 # https://matplotlib.org/3.1.0/gallery/color/named_colors.html
-graph_colors = ['blue', 'orange', 'green', 'red', 'purple', 'brown', 'pink']
+graph_colors = ['royalblue', 'orangered', 'green', 'gold', 'violet', 'silver', 'lightgreen']
 line_values = sorted(list_tally, key = operator.itemgetter(1), reverse = True)
 word_values = sorted(list_tally, key = operator.itemgetter(2), reverse = True)
 graph_name_values = []
@@ -135,7 +135,7 @@ fig, (ax1, ax2) = plt.subplots(2, 1, dpi = 120)
 fig.suptitle('Top 7 Speaking Characters Line Count & Word Count Share')
 ax1.set_xlabel('Share By Line Count')
 ax2.set_xlabel('Share By Word Count')
-ax1.pie(graph_line_values, labels = graph_name_values, autopct='%1.1f%%', shadow = True)
-ax2.pie(graph_word_values, labels = graph_name_values, autopct='%1.1f%%', shadow = True)
+ax1.pie(graph_line_values, labels = graph_name_values, autopct='%1.1f%%', shadow = True, colors = graph_colors)
+ax2.pie(graph_word_values, labels = graph_name_values, autopct='%1.1f%%', shadow = True, colors = graph_colors)
 fig.set_size_inches(11, 8.5)
 plt.show()
