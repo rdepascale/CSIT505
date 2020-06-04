@@ -1,0 +1,47 @@
+CSIT 505 project notes
+Use Star Wars V script
+
+PROOF OF CONCEPT
+iterate through file
+	split/strip so it is name then text line after line
+create dictionary key (name) : value (line)
+iterate through dictionary (maybe not dictinoary)
+	create dictionarys
+	key (name)
+	    : value (# lines)
+	    : value (num chars in line)
+	    : value (words in line)
+create histograms
+       name vs # lines
+       name vs # chars
+       name vs words
+
+- Read file
+	- scan for all caps (name) between ""
+		- store as string variable
+	- scan for next set of "indicates dialog"
+		- store as int of character count
+		- store as int # of whitespace + 1 = # of words
+	- input into temp list ["NAME", character instance, #char, #word]
+		- input int list of list for later (final) use
+
+============
+DONE:
+- read file
+- store text lines into array line_values [['character name', word, word, etc.],...]
+- transform line_values into list_tally with sublist elements:
+	- alphabetic by unique character names
+	- # of total spoken lines
+	- # of total spoken words
+- output results to graphs of x (name) vs y (word or line) or vs y/z (word & line)
+
+TO-DO:
+- help prep word analysis by stripping any punctuation from list_lines
+- sentiment analysis:
+	- build arrays of positive & negative words:
+		- https://positivewordsresearch.com/list-of-negative-words/
+	- iterate through list_lines and any hits should be appended to list_tally
+	- append # of hits for pos/neg words and character name
+- iterate through line_list to make unique list of  character name and ALL words
+	- use this to look for most frequent words spoken
+- n-Grams of word frequency/etc.
