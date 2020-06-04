@@ -13,8 +13,8 @@ import operator
 # sorted(list_name, key = operator.itemgetter(sublist element number)) <= ascending order
 # sorted(list_name, key = operator.itemgetter(sublist element number), reverse = True) <= descending order
 
-file_str = "datasets_25491_32521_SW_EpisodeV.txt"
-#file_str = "sw_v_temp.txt"
+file_str = "datasets/datasets_25491_32521_SW_EpisodeV.txt"
+#file_str = "datasets/sw_v_temp.txt"
 
 # read script into a list for manipulation
 with open(file_str) as file:
