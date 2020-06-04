@@ -1,3 +1,22 @@
+FP0: File Project Milestone 0
+Proposal
+============
+For my project I am going to follow the suggestion of Text Analytics by using the script for Star Wars Episode V ( https://www.kaggle.com/xvivancos/star-wars-movie-scripts/data?select=SW_EpisodeV.txt ) as my data.
+
+For my proof of concept I am going to begin by utilizing the file i/o we have done so far in class with text files to create a simple set of “structured data” that will enable me to look at character name paired with:
+
+        frequency they occur as a speaking character, 
+        number of words they speak over all, 
+        and number of characters per words spoken overall
+            this could be used with the number of words to find some sort of average character per word to create a basic understanding of how “long” their words are, maybe this is useful to differentiate someone using very simple vs. difficult words
+
+This will then be plotted to verify data has been obtained correctly and can be manipulated.
+
+This data is not going to be enough for the final result but should, ideally, provide some clues for me to go into for the more in depth investigation about positive/negative words/tone, etc. as indicated in the guideline.  The initial data could prove useful to see if there is any relationship between frequency of speaking/lines/number of words/number of characters spoken and how positive/negative they are or one of the other suggestion comparisons.
+
+
+============
+
 CSIT 505 project notes
 Use Star Wars V script
 
@@ -26,7 +45,7 @@ create histograms
 		- input int list of list for later (final) use
 
 ============
-DONE:
+FP1: Final Project Milestone 1
 - read file
 - store text lines into array line_values [['character name', word, word, etc.],...]
 - transform line_values into list_tally with sublist elements:
