@@ -9,6 +9,8 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import operator
+import string
+
 # allows us to create more advanced sorting based on sublist element
 # sorted(list_name, key = operator.itemgetter(sublist element number)) <= ascending order
 # sorted(list_name, key = operator.itemgetter(sublist element number), reverse = True) <= descending order
@@ -19,6 +21,7 @@ file_str = "datasets/datasets_25491_32521_SW_EpisodeV.txt"
 # read script into a list for manipulation
 with open(file_str) as file:
     list_lines = [line.split() for line in file]
+file.close()
 
 # first index in linked list after first line is a number, remove it    
 for line in range(1, len(list_lines)):
@@ -31,6 +34,7 @@ del list_lines[0]
 list_lines.sort()
 
 # remove extraneous quotes from text
+'''# original method
 # due to importing or set-up of data we may have some non-essential characters, this eliminates the " in specific
 for i in range( len(list_lines) ):
     for j in range( len(list_lines[i]) ):
@@ -40,8 +44,12 @@ for i in range( len(list_lines) ):
             list_lines[i][j] = list_lines[i][j][ 1 : ]                          # trims via slice
         elif list_lines[i][j][-1:] == '"':                                      # catches " at end of text
             list_lines[i][j] = list_lines[i][j][ : -1 ]                         # trims via slice
-# putting in additional check codes for punctuation can fail if one of the above catches this
+# putting in additional check codes for punctuation can fail if one of the above catches this'''
 # think of a solution later!
+# 6/6 2:45am - adapted solution from https://stackoverflow.com/questions/34293875/how-to-remove-punctuation-marks-from-a-string-in-python-3-x-using-translate
+for i in range( len(list_lines) ):
+    for j in range( len(list_lines[i]) ):
+        list_lines[i][j] = list_lines[i][j].translate( str.maketrans('', '', string.punctuation) )
     
 #This will insert the character name and number of words into a new list
 list_tally = []
@@ -80,10 +88,9 @@ for i in range( 7 ):
     graph_line_values.append(line_values[i][1])
     graph_word_values.append(word_values[i][2]) 
 
+'''
 # graph adapted from
 # https://matplotlib.org/3.1.3/gallery/lines_bars_and_markers/barchart.html#sphx-glr-gallery-lines-bars-and-markers-barchart-py
-
-
 x = np.arange(len(graph_name_values))
 width = 0.35
 
@@ -138,4 +145,4 @@ ax2.set_xlabel('Share By Word Count')
 ax1.pie(graph_line_values, labels = graph_name_values, autopct='%1.1f%%', shadow = True, colors = graph_colors)
 ax2.pie(graph_word_values, labels = graph_name_values, autopct='%1.1f%%', shadow = True, colors = graph_colors)
 fig.set_size_inches(11, 8.5)
-plt.show()
+plt.show()'''
