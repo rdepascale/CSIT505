@@ -19,8 +19,10 @@ file_str = "datasets/datasets_25491_32521_SW_EpisodeV.txt"
 #file_str = "datasets/sw_v_temp.txt"
 
 # read script into a list for manipulation
+# while converting to lowercase & removing punctuation
+# translate() adadpted from: https://stackoverflow.com/questions/34293875/how-to-remove-punctuation-marks-from-a-string-in-python-3-x-using-translate
 with open(file_str) as file:
-    list_lines = [line.split() for line in file]
+    list_lines = [line.lower().translate( str.maketrans('', '', string.punctuation) ).split() for line in file]
 file.close()
 
 # first index in linked list after first line is a number, remove it    
@@ -33,23 +35,7 @@ del list_lines[0]
 # sort row to begin looking at calculations
 list_lines.sort()
 
-# remove extraneous quotes from text
-'''# original method
-# due to importing or set-up of data we may have some non-essential characters, this eliminates the " in specific
-for i in range( len(list_lines) ):
-    for j in range( len(list_lines[i]) ):
-        if list_lines[i][j][0 : 1] == '"' and list_lines[i][j][-1:] == '"':     # catches " at beginning & end of text
-            list_lines[i][j] = list_lines[i][j][ 1 : len(list_lines[i][j])-1 ]  # trims via slice
-        elif list_lines[i][j][0 : 1] == '"':                                    # catches " at beginning of text
-            list_lines[i][j] = list_lines[i][j][ 1 : ]                          # trims via slice
-        elif list_lines[i][j][-1:] == '"':                                      # catches " at end of text
-            list_lines[i][j] = list_lines[i][j][ : -1 ]                         # trims via slice
-# putting in additional check codes for punctuation can fail if one of the above catches this'''
-# think of a solution later!
-# 6/6 2:45am - adapted solution from https://stackoverflow.com/questions/34293875/how-to-remove-punctuation-marks-from-a-string-in-python-3-x-using-translate
-for i in range( len(list_lines) ):
-    for j in range( len(list_lines[i]) ):
-        list_lines[i][j] = list_lines[i][j].lower().translate( str.maketrans('', '', string.punctuation) )
+# make character names uppercase at start of line to differentiate with when they are mentioned in script
 for i in range( len(list_lines) ):
     list_lines[i][0] = list_lines[i][0].upper()
 
