@@ -49,8 +49,10 @@ for i in range( len(list_lines) ):
 # 6/6 2:45am - adapted solution from https://stackoverflow.com/questions/34293875/how-to-remove-punctuation-marks-from-a-string-in-python-3-x-using-translate
 for i in range( len(list_lines) ):
     for j in range( len(list_lines[i]) ):
-        list_lines[i][j] = list_lines[i][j].translate( str.maketrans('', '', string.punctuation) )
-    
+        list_lines[i][j] = list_lines[i][j].lower().translate( str.maketrans('', '', string.punctuation) )
+for i in range( len(list_lines) ):
+    list_lines[i][0] = list_lines[i][0].upper()
+
 #This will insert the character name and number of words into a new list
 list_tally = []
 
@@ -87,6 +89,9 @@ for i in range( 7 ):
     graph_name_values.append(line_values[i][0])
     graph_line_values.append(line_values[i][1])
     graph_word_values.append(word_values[i][2]) 
+
+graph_name_values.append("OTHERS")
+
 
 '''
 # graph adapted from
