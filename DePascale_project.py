@@ -17,19 +17,29 @@ import string
 
 file_str = "datasets/datasets_25491_32521_SW_EpisodeV.txt"
 #file_str = "datasets/sw_v_temp.txt"
+pos_word_str = "datasets/positive_words.txt"
+neg_word_str = "datasets/negative_words.txt"
+
+# import positive and negative words to list split at ',' and made lowecase
+with open(pos_word_str) as file:
+    pos_words = file.read().lower().split(',')
+file.close()
+with open(neg_word_str) as file:
+    neg_words = file.read().lower().split(',')
+file.close()
 
 # read script into a list for manipulation
-# while converting to lowercase & removing punctuation
+# split at space, text lowercase, no punctuation
 # translate() adadpted from: https://stackoverflow.com/questions/34293875/how-to-remove-punctuation-marks-from-a-string-in-python-3-x-using-translate
 with open(file_str) as file:
     list_lines = [line.lower().translate( str.maketrans('', '', string.punctuation) ).split() for line in file]
 file.close()
 
-# first index in linked list after first line is a number, remove it    
+# first index in list_lines after first line is a number, remove it    
 for line in range(1, len(list_lines)):
     del list_lines[line][0]    
 
-# delete first row of non-useful data
+# delete first row of non-useful data in list_lines
 del list_lines[0]
 
 # sort row to begin looking at calculations
