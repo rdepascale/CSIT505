@@ -28,6 +28,12 @@ with open(neg_word_str) as file:
     neg_words = file.read().lower().split(',')
 file.close()
 
+# create sublist of WORD, COUNT for future analysis of positivea nd negative words
+for i in range( len(pos_words) ):
+    pos_words[i] = [pos_words[i], 0]
+for i in range( len(neg_words) ):
+    neg_words[i] = [neg_words[i], 0]
+
 # read script into a list for manipulation
 # split at space, text lowercase, no punctuation
 # translate() adadpted from: https://stackoverflow.com/questions/34293875/how-to-remove-punctuation-marks-from-a-string-in-python-3-x-using-translate
@@ -49,9 +55,19 @@ list_lines.sort()
 for i in range( len(list_lines) ):
     list_lines[i][0] = list_lines[i][0].upper()
 
+# create count of positive & negative words by iterating through the list_lines
+# then the pos_words & neg_words lists
+# if a match is found then the appropriate word is incremented by 1
+for i in range( len(list_lines) ):
+    for j in range( len(pos_words) ):
+        if pos_words[j][0] in list_lines[i]:
+            pos_words[j][1] += 1
+    for k in range( len(neg_words) ):
+        if neg_words[k][0] in list_lines[i]:
+            neg_words[k][1] += 1
+
 #This will insert the character name and number of words into a new list
 list_tally = []
-
 for i in range( len(list_lines) ):
     # inserts character name then the count of words by counting elements AFTER name in list
     list_tally.append( [ list_lines[i][0], len(list_lines[i][1 : len(list_lines[0]) ] ) ] )
