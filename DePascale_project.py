@@ -29,15 +29,6 @@ def trim_list( list_name, n ):
             break
     return(list_name)
 
-# create count of word form word_list by iterating through the list_lines
-def word_count(word_list):
-    for i in range( len(list_lines) ):
-        for j in range( len(word_list) ):
-            if word_list[j][0] in list_lines[i]:        # if a match is found
-                word_list[j][1] += 1                    # count is incremented by 1
-                word_list[j].append(list_lines[i][0])   # append name of speaker of word
-    return(word_list)
-
 # import words from dataset list to split at ',' and make lowercase
 def read_words(word_str):
     with open(word_str, 'r') as file:
@@ -47,6 +38,33 @@ def read_words(word_str):
     for i in range( len(words) ):
         words[i] = [words[i], 0]
     return words
+
+# create count of word form word_list by iterating through the list_lines
+def word_count(word_list):
+    for i in range( len(list_lines) ):
+        for j in range( len(word_list) ):
+            if word_list[j][0] in list_lines[i]:        # if a match is found
+                word_list[j][1] += 1                    # count is incremented by 1
+                word_list[j].append(list_lines[i][0])   # append name of speaker of word
+    return(word_list)
+
+# format trimed word list as [ [word, count], [character1, count], [character2, count], etc.]
+def word_tally(word_list):
+    tally = []                              
+    for i in range(len(word_list)):                             # iterate through all elements in a given "row"          
+        tally.append([word_list[i][:2]])                        # append current word and total count to first index as sublist
+        count = 1
+        for j in range(2, len(word_list[i])):                   # iterate through "row" looking at who spoke the word
+            try:
+                if word_list[i][j] == word_list[i][j+1]:        # if the speaker matches
+                    count += 1                                  # increase speaker wordcount
+                else:                                           # no more instance of speaker
+                    tally[i].append([word_list[i][j], count])   # append speaker and wordcount to sublist
+                    count = 1                                   # reset wordcount to 1
+            except IndexError:                                  # catch when we end the row
+                tally[i].append([word_list[i][j], count])       # append speaker and wordcount to sublist
+                count = 1                                       # reset the count
+    return(tally)                                               # return final list
 
 file_str = "datasets/datasets_25491_32521_SW_EpisodeV.txt"
 #file_str = "datasets/sw_v_temp.txt" # smaller dataset for testing
@@ -58,7 +76,8 @@ neg_words = read_words(neg_word_str)
 
 # read script into a list for manipulation
 # split at space, text lowercase, no punctuation
-# translate() adadpted from: https://stackoverflow.com/questions/34293875/how-to-remove-punctuation-marks-from-a-string-in-python-3-x-using-translate
+# translate() adapted from:
+# https://stackoverflow.com/questions/34293875/how-to-remove-punctuation-marks-from-a-string-in-python-3-x-using-translate
 with open(file_str, 'r') as file:
     list_lines = [line.lower().translate( str.maketrans('', '', string.punctuation) ).split() for line in file]
 file.close()
@@ -105,6 +124,10 @@ while True:
 # trim out entries with count of zero for each list
 trim_list(neg_words, 1)
 trim_list(pos_words, 1)
+
+# get tally of [ [word, count], [char1, count], [char2, count], etc.]
+pos_word_tally = word_tally(pos_words)
+neg_word_tally = word_tally(neg_words)
 
 # graph data section
 # color codes sourced from
