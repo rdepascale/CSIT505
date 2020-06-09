@@ -53,8 +53,6 @@ FP1: Final Project Milestone 1
 	- # of total spoken lines
 	- # of total spoken words
 - output results to graphs of x (name) vs y (word or line) or vs y/z (word & line)
-
-TO-DO:
 - help prep word analysis by stripping any punctuation from list_lines
 - sentiment analysis:
 	- build arrays of positive & negative words:
@@ -62,6 +60,11 @@ TO-DO:
 		- https://positivewordsresearch.com/list-of-negative-words/
 	- iterate through list_lines and any hits should be appended to list_tally
 	- append # of hits for pos/neg words and character name
+
+
+TO-DO:
+- sentiment analysis:
+	- append pos/neg word count to list_tally for top 7 computations
 - iterate through line_list to make unique list of  character name and ALL words
 	- use this to look for most frequent words spoken
 - n-Grams of word frequency/etc.
