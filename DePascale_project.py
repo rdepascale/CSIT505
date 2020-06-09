@@ -90,22 +90,27 @@ while True:
 # graph data section
 # color codes sourced from
 # https://matplotlib.org/3.1.0/gallery/color/named_colors.html
-graph_colors = ['royalblue', 'orangered', 'green', 'gold', 'violet', 'silver', 'lightgreen']
+graph_colors = ['royalblue', 'orangered', 'green', 'gold', 'violet', 'silver', 'lightgreen', 'navajowhite']
 line_values = sorted(list_tally, key = operator.itemgetter(1), reverse = True)
 word_values = sorted(list_tally, key = operator.itemgetter(2), reverse = True)
 graph_name_values = []
 graph_line_values = []
 graph_word_values = []
-# top 7 characters in line and word are the same, focus on them
+# top 7 characters in line and word are the same, focus on them for individual comparison
 for i in range( 7 ):
     graph_name_values.append(line_values[i][0])
     graph_line_values.append(line_values[i][1])
     graph_word_values.append(word_values[i][2]) 
 
+# all other characters occupy 8th slot as "others" to demonstrate main character share vs everyone not in top 7
 graph_name_values.append("OTHERS")
+graph_line_values.append(0)
+graph_word_values.append(0)
+for i in range( 8, len(line_values) ):
+    graph_line_values[7] += line_values[i][1]
+    graph_word_values[7] += word_values[i][2]
 
 
-'''
 # graph adapted from
 # https://matplotlib.org/3.1.3/gallery/lines_bars_and_markers/barchart.html#sphx-glr-gallery-lines-bars-and-markers-barchart-py
 x = np.arange(len(graph_name_values))
@@ -162,4 +167,4 @@ ax2.set_xlabel('Share By Word Count')
 ax1.pie(graph_line_values, labels = graph_name_values, autopct='%1.1f%%', shadow = True, colors = graph_colors)
 ax2.pie(graph_word_values, labels = graph_name_values, autopct='%1.1f%%', shadow = True, colors = graph_colors)
 fig.set_size_inches(11, 8.5)
-plt.show()'''
+plt.show()
