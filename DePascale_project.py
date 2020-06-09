@@ -28,7 +28,7 @@ with open(neg_word_str) as file:
     neg_words = file.read().lower().split(',')
 file.close()
 
-# create sublist of WORD, COUNT for future analysis of positivea nd negative words
+# create sublist of WORD, COUNT for future analysis of positivea and negative words
 for i in range( len(pos_words) ):
     pos_words[i] = [pos_words[i], 0]
 for i in range( len(neg_words) ):
