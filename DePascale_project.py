@@ -38,29 +38,28 @@ def word_count(word_list):
                 word_list[j].append(list_lines[i][0])   # append name of speaker of word
     return(word_list)
 
+# import words from dataset list to split at ',' and make lowercase
+def read_words(word_str):
+    with open(word_str, 'r') as file:
+        words = file.read().lower().split(',')
+    file.close()
+    # create a sublist of WORD, COUNT for later analysis
+    for i in range( len(words) ):
+        words[i] = [words[i], 0]
+    return words
+
 file_str = "datasets/datasets_25491_32521_SW_EpisodeV.txt"
-#file_str = "datasets/sw_v_temp.txt"
+#file_str = "datasets/sw_v_temp.txt" # smaller dataset for testing
 pos_word_str = "datasets/positive_words.txt"
 neg_word_str = "datasets/negative_words.txt"
 
-# import positive and negative words to list split at ',' and made lowecase
-with open(pos_word_str) as file:
-    pos_words = file.read().lower().split(',')
-file.close()
-with open(neg_word_str) as file:
-    neg_words = file.read().lower().split(',')
-file.close()
-
-# create sublist of WORD, COUNT for future analysis of positive and negative words
-for i in range( len(pos_words) ):
-    pos_words[i] = [pos_words[i], 0]
-for i in range( len(neg_words) ):
-    neg_words[i] = [neg_words[i], 0]
+pos_words = read_words(pos_word_str)
+neg_words = read_words(neg_word_str)
 
 # read script into a list for manipulation
 # split at space, text lowercase, no punctuation
 # translate() adadpted from: https://stackoverflow.com/questions/34293875/how-to-remove-punctuation-marks-from-a-string-in-python-3-x-using-translate
-with open(file_str) as file:
+with open(file_str, 'r') as file:
     list_lines = [line.lower().translate( str.maketrans('', '', string.punctuation) ).split() for line in file]
 file.close()
 
@@ -116,6 +115,7 @@ word_values = sorted(list_tally, key = operator.itemgetter(2), reverse = True)
 graph_name_values = []
 graph_line_values = []
 graph_word_values = []
+
 # top 7 characters in line and word are the same, focus on them for individual comparison
 for i in range( 7 ):
     graph_name_values.append(line_values[i][0])
