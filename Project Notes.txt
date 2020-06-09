@@ -24,8 +24,8 @@ PROOF OF CONCEPT
 iterate through file
 	split/strip so it is name then text line after line
 create dictionary key (name) : value (line)
-iterate through dictionary (maybe not dictinoary)
-	create dictionarys
+iterate through dictionary (maybe not dictionary)
+	create dictionaries
 	key (name)
 	    : value (# lines)
 	    : value (num chars in line)
