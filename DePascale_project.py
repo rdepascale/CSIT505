@@ -11,9 +11,32 @@ import numpy as np
 import operator
 import string
 
+# operator
 # allows us to create more advanced sorting based on sublist element
 # sorted(list_name, key = operator.itemgetter(sublist element number)) <= ascending order
 # sorted(list_name, key = operator.itemgetter(sublist element number), reverse = True) <= descending order
+
+# function to remove sublists providing the nth index in the sublist is zero
+def trim_list( list_name, n ):
+    i = 0
+    while True:
+        try:
+            if list_name[i][n] == 0:  # verify quantity is zero
+                del list_name[i]      # delete the entry
+            else:                     # i is only increased when the value is non-zero
+                i += 1
+        except IndexError:            # an IndexError means we have trimmed all non-unique entries, end the loop
+            break
+    return(list_name)
+
+# create count of word form word_list by iterating through the list_lines
+def word_count(word_list):
+    for i in range( len(list_lines) ):
+        for j in range( len(word_list) ):
+            if word_list[j][0] in list_lines[i]:        # if a match is found
+                word_list[j][1] += 1                    # count is incremented by 1
+                word_list[j].append(list_lines[i][0])   # append name of speaker of word
+    return(word_list)
 
 file_str = "datasets/datasets_25491_32521_SW_EpisodeV.txt"
 #file_str = "datasets/sw_v_temp.txt"
@@ -28,7 +51,7 @@ with open(neg_word_str) as file:
     neg_words = file.read().lower().split(',')
 file.close()
 
-# create sublist of WORD, COUNT for future analysis of positivea and negative words
+# create sublist of WORD, COUNT for future analysis of positive and negative words
 for i in range( len(pos_words) ):
     pos_words[i] = [pos_words[i], 0]
 for i in range( len(neg_words) ):
@@ -55,16 +78,9 @@ list_lines.sort()
 for i in range( len(list_lines) ):
     list_lines[i][0] = list_lines[i][0].upper()
 
-# create count of positive & negative words by iterating through the list_lines
-# then the pos_words & neg_words lists
-# if a match is found then the appropriate word is incremented by 1
-for i in range( len(list_lines) ):
-    for j in range( len(pos_words) ):
-        if pos_words[j][0] in list_lines[i]:
-            pos_words[j][1] += 1
-    for k in range( len(neg_words) ):
-        if neg_words[k][0] in list_lines[i]:
-            neg_words[k][1] += 1
+# get count of occurance of word type and append speaker
+word_count(pos_words)
+word_count(neg_words)
 
 #This will insert the character name and number of words into a new list
 list_tally = []
@@ -86,6 +102,10 @@ while True:
             i += 1
     except IndexError:                              # an IndexError means we have trimmed all non-unique entries, end the loop
         break
+
+# trim out entries with count of zero for each list
+trim_list(neg_words, 1)
+trim_list(pos_words, 1)
 
 # graph data section
 # color codes sourced from
@@ -110,7 +130,7 @@ for i in range( 8, len(line_values) ):
     graph_line_values[7] += line_values[i][1]
     graph_word_values[7] += word_values[i][2]
 
-
+'''
 # graph adapted from
 # https://matplotlib.org/3.1.3/gallery/lines_bars_and_markers/barchart.html#sphx-glr-gallery-lines-bars-and-markers-barchart-py
 x = np.arange(len(graph_name_values))
@@ -168,3 +188,4 @@ ax1.pie(graph_line_values, labels = graph_name_values, autopct='%1.1f%%', shadow
 ax2.pie(graph_word_values, labels = graph_name_values, autopct='%1.1f%%', shadow = True, colors = graph_colors)
 fig.set_size_inches(11, 8.5)
 plt.show()
+'''
