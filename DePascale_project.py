@@ -66,6 +66,18 @@ def word_tally(word_list):
                 count = 1                                       # reset the count
     return(tally)                                               # return final list
 
+# take list of [character, line#, word# ] and amend to have count of pos/neg word in substring
+# tally should be list_tally, words should be pos_words or neg_words
+def tally_amend(tally, words, n):
+    for i in range( len(tally) ):
+        tally[i].extend([0])
+    for i in range( len(tally) ):
+        for j in range( len(words) ):
+            for k in range(2, len(words[j]) ):
+                if tally[i][0] == words[j][k]:
+                    tally[i][n] +=1
+    return tally
+
 file_str = "datasets/datasets_25491_32521_SW_EpisodeV.txt"
 #file_str = "datasets/sw_v_temp.txt" # smaller dataset for testing
 pos_word_str = "datasets/positive_words.txt"
@@ -118,8 +130,8 @@ while True:
             del list_tally[i+1]                     # delete the next entry
         else:                                       # i is only increased when the next entry name is unique
             i += 1
-    except IndexError:                              # an IndexError means we have trimmed all non-unique entries, end the loop
-        break
+    except IndexError:                              # IndexError means all non-unique entries trimmed
+        break                                       # end the loop
 
 # trim out entries with count of zero for each list
 trim_list(neg_words, 1)
@@ -129,6 +141,11 @@ trim_list(pos_words, 1)
 pos_word_tally = word_tally(pos_words)
 neg_word_tally = word_tally(neg_words)
 
+# amend list_tally to be formatted with sublist elements [name, #lines, #words, #pos, #neg]
+tally_amend(list_tally, pos_words, 3)
+tally_amend(list_tally, neg_words, 4)
+
+'''
 # graph data section
 # color codes sourced from
 # https://matplotlib.org/3.1.0/gallery/color/named_colors.html
@@ -152,10 +169,11 @@ graph_word_values.append(0)
 for i in range( 8, len(line_values) ):
     graph_line_values[7] += line_values[i][1]
     graph_word_values[7] += word_values[i][2]
-
 '''
-# graph adapted from
+'''
+# graphs adapted from
 # https://matplotlib.org/3.1.3/gallery/lines_bars_and_markers/barchart.html#sphx-glr-gallery-lines-bars-and-markers-barchart-py
+
 x = np.arange(len(graph_name_values))
 width = 0.35
 
