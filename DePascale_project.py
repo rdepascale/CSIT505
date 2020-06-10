@@ -67,7 +67,9 @@ def word_tally(word_list):
     return(tally)                                               # return final list
 
 # take list of [character, line#, word# ] and amend to have count of pos/neg word in substring
-# tally should be list_tally, words should be pos_words or neg_words
+# tally should be list_tally
+# words should be pos_words or neg_words
+# n = index in sublist to update count, specified in code
 def tally_amend(tally, words, n):
     for i in range( len(tally) ):
         tally[i].extend([0])
