@@ -12,10 +12,8 @@ Analysis of Star Wars Episode V script to look for insights into characters base
       
 This is still a work in progress!
 
-==================
-Milestone 1 Report
-==================
-What Has Been Accomplished So Far
+
+# Milestone 1 Report - What Has Been Accomplished So Far
 The following datasets have been obtained:
   - Star Wars Episode V script: https://www.kaggle.com/xvivancos/star-wars-movie-scripts/data?select=SW_EpisodeV.txt
   - List of Positive Words: https://positivewordsresearch.com/list-of-positive-words/
