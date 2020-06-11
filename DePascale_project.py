@@ -29,7 +29,7 @@ def trim_list( list_name, n ):
             break
     return(list_name)
 
-# import words from dataset list to split at ',' and make lowercase
+# import words from dataset to list split at ',' and make lowercase
 def read_words(word_str):
     with open(word_str, 'r') as file:
         words = file.read().lower().split(',')
@@ -80,14 +80,12 @@ def tally_amend(tally, words, n):
                     tally[i][n] +=1
     return tally
 
+# Datasets to be used in analysis
 file_str = "datasets/datasets_25491_32521_SW_EpisodeV.txt"
-#file_str = "datasets/sw_v_temp.txt" # smaller dataset for testing
 pos_word_str = "datasets/positive_words.txt"
 neg_word_str = "datasets/negative_words.txt"
 
-pos_words = read_words(pos_word_str)
-neg_words = read_words(neg_word_str)
-
+''' Star Wars Episode V Script '''
 # read script into a list for manipulation
 # split at space, text lowercase, no punctuation
 # translate() adapted from:
@@ -96,30 +94,25 @@ with open(file_str, 'r') as file:
     list_lines = [line.lower().translate( str.maketrans('', '', string.punctuation) ).split() for line in file]
 file.close()
 
-# first index in list_lines after first line is a number, remove it    
-for line in range(1, len(list_lines)):
-    del list_lines[line][0]    
-
 # delete first row of non-useful data in list_lines
 del list_lines[0]
 
-# sort row to begin looking at calculations
-list_lines.sort()
-
-# make character names uppercase at start of line to differentiate with when they are mentioned in script
-for i in range( len(list_lines) ):
+# first index in list_lines after first line is a number, remove it
+# character name is now first index, make it uppercase so that we can
+# differentiate with when they are mentioned in script if needed
+for i in range(len(list_lines)):
+    del list_lines[i][0]
     list_lines[i][0] = list_lines[i][0].upper()
 
-# get count of occurance of word type and append speaker
-word_count(pos_words)
-word_count(neg_words)
+# sort row to begin looking at calculations
+list_lines.sort()
 
 #This will insert the character name and number of words into a new list
 list_tally = []
 for i in range( len(list_lines) ):
     # inserts character name then the count of words by counting elements AFTER name in list
     list_tally.append( [ list_lines[i][0], len(list_lines[i][1 : len(list_lines[0]) ] ) ] )
-    # inserts blank element between name and word count for purposes of character count
+    # inserts blank element between name and word count for purposes of line count
     list_tally[i].insert(1,1)
 
 # continuing from above we are adding in the line count and word count to the associated name
@@ -135,6 +128,15 @@ while True:
     except IndexError:                              # IndexError means all non-unique entries trimmed
         break                                       # end the loop
 
+''' Postiive and Negative Words '''
+# import dataset to lists
+pos_words = read_words(pos_word_str)
+neg_words = read_words(neg_word_str)
+
+# get count of occurance of word type and append speaker
+word_count(pos_words)
+word_count(neg_words)
+
 # trim out entries with count of zero for each list
 trim_list(neg_words, 1)
 trim_list(pos_words, 1)
@@ -147,9 +149,9 @@ neg_word_tally = word_tally(neg_words)
 tally_amend(list_tally, pos_words, 3)
 tally_amend(list_tally, neg_words, 4)
 
-'''
-# graph data section
-# color codes sourced from
+
+''' Graph Section '''
+'''# color codes sourced from
 # https://matplotlib.org/3.1.0/gallery/color/named_colors.html
 graph_colors = ['royalblue', 'orangered', 'green', 'gold', 'violet', 'silver', 'lightgreen', 'navajowhite']
 line_values = sorted(list_tally, key = operator.itemgetter(1), reverse = True)
@@ -171,8 +173,7 @@ graph_word_values.append(0)
 for i in range( 8, len(line_values) ):
     graph_line_values[7] += line_values[i][1]
     graph_word_values[7] += word_values[i][2]
-'''
-'''
+
 # graphs adapted from
 # https://matplotlib.org/3.1.3/gallery/lines_bars_and_markers/barchart.html#sphx-glr-gallery-lines-bars-and-markers-barchart-py
 
