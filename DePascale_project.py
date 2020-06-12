@@ -10,6 +10,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import operator
 import string
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from nltk.corpus import stopwords
+import nltk
+from nltk import ngrams
 
 # operator
 # allows us to create more advanced sorting based on sublist element
@@ -115,6 +120,7 @@ for i in range( len(list_lines) ):
     # inserts blank element between name and word count for purposes of line count
     list_tally[i].insert(1,1)
 
+
 # continuing from above we are adding in the line count and word count to the associated name
 i = 0
 while True:
@@ -151,7 +157,7 @@ tally_amend(list_tally, neg_words, 4)
 
 
 ''' Graph Section '''
-'''# color codes sourced from
+# color codes sourced from
 # https://matplotlib.org/3.1.0/gallery/color/named_colors.html
 graph_colors = ['royalblue', 'orangered', 'green', 'gold', 'violet', 'silver', 'lightgreen', 'navajowhite']
 line_values = sorted(list_tally, key = operator.itemgetter(1), reverse = True)
@@ -173,7 +179,7 @@ graph_word_values.append(0)
 for i in range( 8, len(line_values) ):
     graph_line_values[7] += line_values[i][1]
     graph_word_values[7] += word_values[i][2]
-
+'''
 # graphs adapted from
 # https://matplotlib.org/3.1.3/gallery/lines_bars_and_markers/barchart.html#sphx-glr-gallery-lines-bars-and-markers-barchart-py
 
@@ -233,3 +239,38 @@ ax2.pie(graph_word_values, labels = graph_name_values, autopct='%1.1f%%', shadow
 fig.set_size_inches(11, 8.5)
 plt.show()
 '''
+
+''' nGrams Section '''
+list_grams = []
+
+# create list of [CHARACTER1, all dialog, CHARACTER2, all dialog, etc.]
+for i in range( len( graph_name_values )-1 ):
+    list_grams.append(graph_name_values[i])
+    for j in range( len( list_lines ) ):
+        if list_lines[j][0] == graph_name_values[i]:
+            list_grams.extend( list_lines[j][1:] )
+            
+sub_grams = []
+a = 0                                       # index 0 is first name in list_grams
+for i in range( 1, len(list_grams) ):       # ignore index 0 as it is a NAME
+    if list_grams[i].isupper():             # when the current index is a NAME
+        sub_grams.append(list_grams[a:i])   # append a sublist from prior name to current name
+        a = i                               # store value of new NAME
+    elif i == len(list_grams)-1:            # captures end of iteration over list_grams
+        sub_grams.append(list_grams[a:i+1]) # appends last NAME to end of list_grams
+
+for i in range( len(sub_grams) ):
+    trigram = ngrams( sub_grams[i], 3)
+    print("\n")
+    for j in trigram:
+        print(j)
+
+''' TF-IDF section '''
+
+
+
+
+
+
+
+
