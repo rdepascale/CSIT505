@@ -257,13 +257,20 @@ for i in range( 1, len(list_grams) ):       # ignore index 0 as it is a NAME
         sub_grams.append(list_grams[a:i])   # append a sublist from prior name to current name
         a = i                               # store value of new NAME
     elif i == len(list_grams)-1:            # captures end of iteration over list_grams
-        sub_grams.append(list_grams[a:i+1]) # appends last NAME to end of list_grams
+        sub_grams.append(list_grams[a:i+1]) # appends next NAME to first element in next sublist
 
 for i in range( len(sub_grams) ):
     trigram = ngrams( sub_grams[i], 3)
-    print("\n")
-    for j in trigram:
-        print(j)
+#    print("\n")
+#    for j in trigram:
+#        print(j)
+
+# adapted from https://stackoverflow.com/a/
+d = {} # create empty dictionary
+han = nltk.collocations.TrigramCollocationFinder.from_words(sub_grams[0][1:])   # prep all han words
+for ngram, freq in han.ngram_fd.items():                                        # iterate over object
+    d[ngram] = freq                                                             # create key of trigram, value frequency
+#    print(ngram, freq)
 
 ''' TF-IDF section '''
 
