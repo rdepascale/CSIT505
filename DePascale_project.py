@@ -165,21 +165,29 @@ word_values = sorted(list_tally, key = operator.itemgetter(2), reverse = True)
 graph_name_values = []
 graph_line_values = []
 graph_word_values = []
+graph_pos_values = []
+graph_neg_values = []
 
 # top 7 characters in line and word are the same, focus on them for individual comparison
 for i in range( 7 ):
     graph_name_values.append(line_values[i][0])
     graph_line_values.append(line_values[i][1])
-    graph_word_values.append(word_values[i][2]) 
+    graph_word_values.append(word_values[i][2])
+    graph_pos_values.append(line_values[i][3])
+    graph_neg_values.append(line_values[i][4])
 
 # all other characters occupy 8th slot as "others" to demonstrate main character share vs everyone not in top 7
 graph_name_values.append("OTHERS")
 graph_line_values.append(0)
 graph_word_values.append(0)
+graph_pos_values.append(0)
+graph_neg_values.append(0)
 for i in range( 8, len(line_values) ):
     graph_line_values[7] += line_values[i][1]
     graph_word_values[7] += word_values[i][2]
-'''
+    graph_pos_values[7] += line_values[i][3]
+    graph_neg_values[7] += line_values[i][4]
+
 # graphs adapted from
 # https://matplotlib.org/3.1.3/gallery/lines_bars_and_markers/barchart.html#sphx-glr-gallery-lines-bars-and-markers-barchart-py
 
@@ -223,6 +231,27 @@ fig.set_size_inches(11, 8.5)
 plt.bar(graph_name_values, graph_line_values, color = graph_colors)
 plt.show()
 
+# pos word count graph
+fig, ax = plt.subplots(dpi = 120)
+ax.set_xlabel('Character Name')
+ax.set_title('Star Wars Episode V Positive Word Conunt per Character')
+ax.set_xticklabels(graph_name_values)
+fig.tight_layout()
+fig = matplotlib.pyplot.gcf()
+fig.set_size_inches(11, 8.5)
+plt.bar(graph_name_values, graph_pos_values, color = graph_colors)
+plt.show()
+
+# neg word count graph
+fig, ax = plt.subplots(dpi = 120)
+ax.set_xlabel('Character Name')
+ax.set_title('Star Wars Episode V Negative Word Conunt per Character')
+ax.set_xticklabels(graph_name_values)
+fig.tight_layout()
+fig = matplotlib.pyplot.gcf()
+fig.set_size_inches(11, 8.5)
+plt.bar(graph_name_values, graph_neg_values, color = graph_colors)
+plt.show()
 
 # pie charts of data for top 7 characters based on word & line counts
 # adapted from
@@ -238,7 +267,7 @@ ax1.pie(graph_line_values, labels = graph_name_values, autopct='%1.1f%%', shadow
 ax2.pie(graph_word_values, labels = graph_name_values, autopct='%1.1f%%', shadow = True, colors = graph_colors)
 fig.set_size_inches(11, 8.5)
 plt.show()
-'''
+
 
 ''' nGrams Section '''
 list_grams = []
