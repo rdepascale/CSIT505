@@ -103,6 +103,8 @@ def name_grams(list_grams, sub_grams):
             sub_grams.append(list_grams[a:i+1]) # appends next NAME to first element in next sublist
     return(list_grams, sub_grams)
 
+# takes a blank list as input and populates it with sublist of ['NAME', {dict of trigrams}]
+# notworking attempt to trim dictionaries where value is 1
 def dict_grams(list_dict_grams):
     for i in range( len(graph_name_values)-1 ):
         d = {}
@@ -111,6 +113,19 @@ def dict_grams(list_dict_grams):
             d[ngram] = freq                # create key of trigram, value frequency
         list_dict_grams.append([graph_name_values[i],d])
     return(list_dict_grams)
+'''    for n in range( len(list_dict_grams) ):
+        ldg_sort = sorted(list_dict_grams[n][1].items(), key = lambda kv:(kv[1], kv[0]), reverse = True)
+        i = 0
+        while True:
+            try:
+                if ldg_sort[i][1] < 2:
+                    del ldg_sort[i]
+                else:
+                        i += 1
+            except IndexError:
+                break
+        list_dict_grams[n][1] = dict(ldg_sort)
+    return(list_dict_grams)'''
 
 # Datasets to be used in analysis
 file_str = "datasets/datasets_25491_32521_SW_EpisodeV.txt"
@@ -302,21 +317,9 @@ sub_grams = []
 name_grams(list_grams, sub_grams)
 
 list_dict_grams = []
-list_dict_grams_sorted = []
 dict_grams(list_dict_grams)
 
-# Create new list_dict with only grams of count greater than 1
-#sorted(list_dict_grams[0][1].items(), key = lambda kv:(kv[1], kv[0]), reverse = True)
 
-'''
-# adapted from https://stackoverflow.com/a/28304388
-d = {} # create empty dictionary
-#han = nltk.collocations.TrigramCollocationFinder.from_words(sub_grams[0][1:])   # prep all han words
-#for ngram, freq in han.ngram_fd.items():                                        # iterate over object
-for ngram, freq in nltk.collocations.TrigramCollocationFinder.from_words(sub_grams[0][1:]).ngram_fd.items():                                        # iterate over object
-    d[ngram] = freq                                                             # create key of trigram, value frequency
-#    print(ngram, freq)
-'''
 ''' TF-IDF section '''
 
 
