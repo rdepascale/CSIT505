@@ -104,16 +104,15 @@ def name_grams(list_grams, sub_grams):
     return(list_grams, sub_grams)
 
 # takes a blank list as input and populates it with sublist of ['NAME', {dict of trigrams}]
-# notworking attempt to trim dictionaries where value is 1
-def dict_grams(list_dict_grams):
+# additional output has trims dictionaries of keys where value is 1
+def dict_grams(list_dict_grams, list_dict_grams_sorted):
     for i in range( len(graph_name_values)-1 ):
         d = {}
         # adapted from https://stackoverflow.com/a/28304388
         for ngram, freq in nltk.collocations.TrigramCollocationFinder.from_words(sub_grams[i][1:]).ngram_fd.items():                                        # iterate over object
             d[ngram] = freq                # create key of trigram, value frequency
         list_dict_grams.append([graph_name_values[i],d])
-    return(list_dict_grams)
-'''    for n in range( len(list_dict_grams) ):
+    for n in range( len(list_dict_grams) ):
         ldg_sort = sorted(list_dict_grams[n][1].items(), key = lambda kv:(kv[1], kv[0]), reverse = True)
         i = 0
         while True:
@@ -124,8 +123,8 @@ def dict_grams(list_dict_grams):
                         i += 1
             except IndexError:
                 break
-        list_dict_grams[n][1] = dict(ldg_sort)
-    return(list_dict_grams)'''
+        list_dict_grams_sorted.append([graph_name_values[n], dict(ldg_sort)])
+    return(list_dict_grams, list_dict_grams_sorted)
 
 # Datasets to be used in analysis
 file_str = "datasets/datasets_25491_32521_SW_EpisodeV.txt"
@@ -311,14 +310,47 @@ fig.set_size_inches(11, 8.5)
 plt.show()
 '''
 
+# Positive & Negative Double Bar
+# https://scriptverse.academy/tutorials/python-matplotlib-bar-chart.html
+fig, ax = plt.subplots()
+index = np.arange( len(graph_name_values)-1 )
+bar_width = 0.35
+ax.bar(index, graph_pos_values[0:7], bar_width, color = graph_colors[0:7], label = 'Positive Words')
+ax.bar(index+bar_width, graph_neg_values[0:7], bar_width, alpha = 0.5, color = graph_colors[0:7], label = 'Negative Words')
+ax.set_xlabel('Character')
+ax.set_ylabel('Count')
+ax.set_title('Positive & Negative Word Counts per Character')
+ax.set_xticks(index+bar_width/2)
+ax.set_xticklabels(graph_name_values[0:7])
+ax.legend()
+fig.set_size_inches(11, 8.5)
+plt.show()
+
+
+
 ''' nGrams Section '''
 list_grams = []
 sub_grams = []
 name_grams(list_grams, sub_grams)
 
 list_dict_grams = []
-dict_grams(list_dict_grams)
+list_dict_grams_sorted = []
+dict_grams(list_dict_grams, list_dict_grams_sorted)
 
+'''
+for n in range( len(list_dict_grams) ):
+    ldg_sort = sorted(list_dict_grams[n][1].items(), key = lambda kv:(kv[1], kv[0]), reverse = True)
+    i = 0
+    while True:
+        try:
+            if ldg_sort[i][1] < 2:
+                del ldg_sort[i]
+            else:
+                i += 1
+        except IndexError:
+            break
+    list_dict_grams[n][1] = dict(ldg_sort)
+'''
 
 ''' TF-IDF section '''
 
