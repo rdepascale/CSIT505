@@ -133,6 +133,7 @@ def make_wordcloud(words):
     word_dict = {}                              # create temporary empty dictionary
     for i in range( len(words) ):               # iterate through pos/neg word list
         word_dict[words[i][0]] = words[i][1]    # make the key the current word & value the count
+    # generation from dictionary adapted from: https://stackoverflow.com/a/51895005
     wc = WordCloud(
         background_color="white", 
         width=1600, height=800, 
@@ -143,6 +144,57 @@ def make_wordcloud(words):
     plt.imshow(wc)
     plt.show()
     return()
+
+# Double Bar
+# Send list data series, strings for [xlabel, ylabel, title] and n value [7 = top 7 speakers, 8 = top 7 + "others"]
+# https://scriptverse.academy/tutorials/python-matplotlib-bar-chart.html
+# https://matplotlib.org/3.1.3/gallery/lines_bars_and_markers/barchart.html#sphx-glr-gallery-lines-bars-and-markers-barchart-py
+def double_bar(legend1, data1, legend2, data2, xlabel, ylabel, title, n):
+    fig, ax = plt.subplots(dpi = 120)
+    index = np.arange( n )
+    bar_width = 0.35
+    ax.bar(index, data1[0:n], bar_width, color = graph_colors[0:n], label = legend1)
+    ax.bar(index+bar_width, data2[0:n], bar_width, alpha = 0.5, color = graph_colors[0:n], label = legend2)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.set_title(title)
+    ax.set_xticks(index+bar_width/2)
+    ax.set_xticklabels(graph_name_values[0:n])
+    ax.legend()
+    fig.set_size_inches(11, 8.5)
+    plt.grid(axis = 'y')
+    plt.show()
+    return
+
+# Single Bar Graph
+# Send list data series, strings for [xlabel, ylabel, title] and n value [7 = top 7 speakers, 8 = top 7 + "others"]
+def single_bar(data, xlabel, ylabel, title, n):
+    fig, ax = plt.subplots(dpi = 120)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel) 
+    ax.set_title(title)
+    ax.set_xticklabels(graph_name_values[0:n])
+    fig.tight_layout()
+    fig = matplotlib.pyplot.gcf()
+    fig.set_size_inches(11, 8.5)
+    plt.bar(graph_name_values[0:n], graph_word_values[0:n], color = graph_colors)
+    plt.grid(axis = 'y')
+    plt.show()
+    return
+
+# Pie Chart
+# Send list data series, string for title, and n value [7 = top 7 speaker,s 8 = top 7 + "others"]
+# https://matplotlib.org/3.2.1/gallery/pie_and_polar_charts/pie_demo2.html#sphx-glr-gallery-pie-and-polar-charts-pie-demo2-py
+# https://matplotlib.org/3.2.1/gallery/subplots_axes_and_figures/subplots_demo.html
+def pie_chart(data, title, n):
+    # make figure and axes
+    fig, ax = plt.subplots(1, 1, dpi = 120)
+    fig.suptitle(title)
+    ax.pie(data[0:n], labels = graph_name_values[0:n], autopct='%1.1f%%', shadow = True, colors = graph_colors[0:n])
+    fig.set_size_inches(11, 8.5)
+    plt.show()
+    return
+
 
 # Datasets to be used in analysis
 file_str = "datasets/datasets_25491_32521_SW_EpisodeV.txt"
@@ -247,116 +299,36 @@ for i in range( 8, len(line_values) ):
     graph_pos_values[7] += line_values[i][3]
     graph_neg_values[7] += line_values[i][4]
 '''
-# graphs adapted from
-# https://matplotlib.org/3.1.3/gallery/lines_bars_and_markers/barchart.html#sphx-glr-gallery-lines-bars-and-markers-barchart-py
-
-x = np.arange(len(graph_name_values))
-width = 0.35
-
-fig, ax = plt.subplots(dpi = 120)
-rects1 = ax.bar(x - width/2, graph_line_values, width, label = '# of lines')
-rects2 = ax.bar(x + width/2, graph_word_values, width, label = '# of words')
-
-# grouped bar graph
-ax.set_xlabel('Character Name')
-ax.set_title('Star Wars Episode V Lines and Words per Character')
-ax.set_xticks(x)
-ax.set_xticklabels(graph_name_values)
-ax.legend()
-fig.tight_layout()
-fig = matplotlib.pyplot.gcf()
-fig.set_size_inches(11, 8.5)
-plt.show()
-
-# word count graph
-fig, ax = plt.subplots(dpi = 120)
-ax.set_xlabel('Character Name')
-ax.set_title('Star Wars Episode V Words per Character')
-ax.set_xticklabels(graph_name_values)
-fig.tight_layout()
-fig = matplotlib.pyplot.gcf()
-fig.set_size_inches(11, 8.5)
-plt.bar(graph_name_values, graph_word_values, color = graph_colors)
-plt.show()
-
-# line count graph
-fig, ax = plt.subplots(dpi = 120)
-ax.set_xlabel('Character Name')
-ax.set_title('Star Wars Episode V Lines per Character')
-ax.set_xticklabels(graph_name_values)
-fig.tight_layout()
-fig = matplotlib.pyplot.gcf()
-fig.set_size_inches(11, 8.5)
-plt.bar(graph_name_values, graph_line_values, color = graph_colors)
-plt.show()
-
-# pos word count graph
-fig, ax = plt.subplots(dpi = 120)
-ax.set_xlabel('Character Name')
-ax.set_title('Star Wars Episode V Positive Word Count per Character')
-ax.set_xticklabels(graph_name_values)
-fig.tight_layout()
-fig = matplotlib.pyplot.gcf()
-fig.set_size_inches(11, 8.5)
-plt.bar(graph_name_values, graph_pos_values, color = graph_colors)
-plt.show()
-
-# neg word count graph
-fig, ax = plt.subplots(dpi = 120)
-ax.set_xlabel('Character Name')
-ax.set_title('Star Wars Episode V Negative Word Count per Character')
-ax.set_xticklabels(graph_name_values)
-fig.tight_layout()
-fig = matplotlib.pyplot.gcf()
-fig.set_size_inches(11, 8.5)
-plt.bar(graph_name_values, graph_neg_values, color = graph_colors)
-plt.show()
-
-# pie charts of data for top 7 characters based on word & line counts
-# adapted from
-# https://matplotlib.org/3.2.1/gallery/pie_and_polar_charts/pie_demo2.html#sphx-glr-gallery-pie-and-polar-charts-pie-demo2-py
-# https://matplotlib.org/3.2.1/gallery/subplots_axes_and_figures/subplots_demo.html
-    
-# make figure and axes
-fig, (ax1, ax2) = plt.subplots(2, 1, dpi = 120)
-fig.suptitle('Top 7 Speaking Characters Line Count & Word Count Share')
-ax1.set_xlabel('Share By Line Count')
-ax2.set_xlabel('Share By Word Count')
-ax1.pie(graph_line_values, labels = graph_name_values, autopct='%1.1f%%', shadow = True, colors = graph_colors)
-ax2.pie(graph_word_values, labels = graph_name_values, autopct='%1.1f%%', shadow = True, colors = graph_colors)
-fig.set_size_inches(11, 8.5)
-plt.show()
-
-# Positive & Negative Double Bar
-# https://scriptverse.academy/tutorials/python-matplotlib-bar-chart.html
-fig, ax = plt.subplots()
-index = np.arange( len(graph_name_values)-1 )
-bar_width = 0.35
-ax.bar(index, graph_pos_values[0:7], bar_width, color = graph_colors[0:7], label = 'Positive Words')
-ax.bar(index+bar_width, graph_neg_values[0:7], bar_width, alpha = 0.5, color = graph_colors[0:7], label = 'Negative Words')
-ax.set_xlabel('Character')
-ax.set_ylabel('Count')
-ax.set_title('Positive & Negative Word Counts per Character')
-ax.set_xticks(index+bar_width/2)
-ax.set_xticklabels(graph_name_values[0:7])
-ax.legend()
-fig.set_size_inches(11, 8.5)
-plt.show()
+pie_chart(graph_line_values, 'Episode V Percentage of Line Count Share', 8)
+pie_chart(graph_line_values, 'Episode V Percentage of Line Count Share', 7)
+pie_chart(graph_word_values, 'Episode V Percentage of Word Count Share', 8)
+pie_chart(graph_word_values, 'Episode V Percentage of Word Count Share', 7)
+pie_chart(graph_pos_values, 'Episode V Percentage of Positive Word Count Share', 7)
+pie_chart(graph_neg_values, 'Episode V Percentage of Negative Word Count Share', 7)
+double_bar('Lines', graph_line_values, 'Words', graph_word_values, 'Character', 'Count', 'Episode V Line & Word Counts per Character', 8)
+double_bar('Lines', graph_line_values, 'Words', graph_word_values, 'Character', 'Count', 'Episode V Line & Word Counts per Character', 7)
+single_bar(graph_word_values, 'Character', 'Count', 'Episode V Word Count per Character', 8)
+single_bar(graph_word_values, 'Character', 'Count', 'Episode V Word Count per Character', 7)
+single_bar(graph_pos_values, 'Character', 'Count', 'Episode V Positive Word Count per Character', 8)
+single_bar(graph_pos_values, 'Character', 'Count', 'Episode V Positive Word Count per Character', 7)
+single_bar(graph_pos_values, 'Character', 'Count', 'Episode V Negative Word Count per Character', 8)
+single_bar(graph_pos_values, 'Character', 'Count', 'Episode V Negative Word Count per Character', 7)
+double_bar('Positive Words', graph_pos_values, 'Negative Words', graph_neg_values, 'Character', 'Count', 'Positive & Negative Word Counts per Character', 7)
+'''
+''' WordCloud Section '''
+'''make_wordcloud(pos_words)
+make_wordcloud(neg_words)
 '''
 
 
-# WordCloud creation
-make_wordcloud(pos_words)
-make_wordcloud(neg_words)
-
 ''' nGrams Section '''
-list_grams = []
+'''list_grams = []
 sub_grams = []
 name_grams(list_grams, sub_grams)
 
 list_dict_grams = []
 list_dict_grams_sorted = []
-dict_grams(list_dict_grams, list_dict_grams_sorted)
+dict_grams(list_dict_grams, list_dict_grams_sorted)'''
 
 '''
 for n in range( len(list_dict_grams) ):
@@ -374,11 +346,3 @@ for n in range( len(list_dict_grams) ):
 '''
 
 ''' TF-IDF section '''
-
-
-
-
-
-
-
-
