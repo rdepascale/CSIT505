@@ -85,6 +85,33 @@ def tally_amend(tally, words, n):
                     tally[i][n] +=1
     return tally
 
+# takes names of focus characters and creates a list with [name1, all dialog, name2, all dialog, etc.]
+# takes prior list and sublists [[name1, all dialog], [name1, all dialog], etc.]
+def name_grams(list_grams, sub_grams):
+    # create list of [CHARACTER1, all dialog, CHARACTER2, all dialog, etc.]
+    for i in range( len( graph_name_values )-1 ):
+        list_grams.append(graph_name_values[i])
+        for j in range( len( list_lines ) ):
+            if list_lines[j][0] == graph_name_values[i]:
+                list_grams.extend( list_lines[j][1:] )
+    a = 0                                       # index 0 is first name in list_grams
+    for i in range( 1, len(list_grams) ):       # ignore index 0 as it is a NAME
+        if list_grams[i].isupper():             # when the current index is a NAME
+            sub_grams.append(list_grams[a:i])   # append a sublist from prior name to current name
+            a = i                               # store value of new NAME
+        elif i == len(list_grams)-1:            # captures end of iteration over list_grams
+            sub_grams.append(list_grams[a:i+1]) # appends next NAME to first element in next sublist
+    return(list_grams, sub_grams)
+
+def dict_grams(list_dict_grams):
+    for i in range( len(graph_name_values)-1 ):
+        d = {}
+        # adapted from https://stackoverflow.com/a/28304388
+        for ngram, freq in nltk.collocations.TrigramCollocationFinder.from_words(sub_grams[i][1:]).ngram_fd.items():                                        # iterate over object
+            d[ngram] = freq                # create key of trigram, value frequency
+        list_dict_grams.append([graph_name_values[i],d])
+    return(list_dict_grams)
+
 # Datasets to be used in analysis
 file_str = "datasets/datasets_25491_32521_SW_EpisodeV.txt"
 pos_word_str = "datasets/positive_words.txt"
@@ -187,7 +214,7 @@ for i in range( 8, len(line_values) ):
     graph_word_values[7] += word_values[i][2]
     graph_pos_values[7] += line_values[i][3]
     graph_neg_values[7] += line_values[i][4]
-
+'''
 # graphs adapted from
 # https://matplotlib.org/3.1.3/gallery/lines_bars_and_markers/barchart.html#sphx-glr-gallery-lines-bars-and-markers-barchart-py
 
@@ -234,7 +261,7 @@ plt.show()
 # pos word count graph
 fig, ax = plt.subplots(dpi = 120)
 ax.set_xlabel('Character Name')
-ax.set_title('Star Wars Episode V Positive Word Conunt per Character')
+ax.set_title('Star Wars Episode V Positive Word Count per Character')
 ax.set_xticklabels(graph_name_values)
 fig.tight_layout()
 fig = matplotlib.pyplot.gcf()
@@ -245,7 +272,7 @@ plt.show()
 # neg word count graph
 fig, ax = plt.subplots(dpi = 120)
 ax.set_xlabel('Character Name')
-ax.set_title('Star Wars Episode V Negative Word Conunt per Character')
+ax.set_title('Star Wars Episode V Negative Word Count per Character')
 ax.set_xticklabels(graph_name_values)
 fig.tight_layout()
 fig = matplotlib.pyplot.gcf()
@@ -267,40 +294,29 @@ ax1.pie(graph_line_values, labels = graph_name_values, autopct='%1.1f%%', shadow
 ax2.pie(graph_word_values, labels = graph_name_values, autopct='%1.1f%%', shadow = True, colors = graph_colors)
 fig.set_size_inches(11, 8.5)
 plt.show()
-
+'''
 
 ''' nGrams Section '''
 list_grams = []
-
-# create list of [CHARACTER1, all dialog, CHARACTER2, all dialog, etc.]
-for i in range( len( graph_name_values )-1 ):
-    list_grams.append(graph_name_values[i])
-    for j in range( len( list_lines ) ):
-        if list_lines[j][0] == graph_name_values[i]:
-            list_grams.extend( list_lines[j][1:] )
-            
 sub_grams = []
-a = 0                                       # index 0 is first name in list_grams
-for i in range( 1, len(list_grams) ):       # ignore index 0 as it is a NAME
-    if list_grams[i].isupper():             # when the current index is a NAME
-        sub_grams.append(list_grams[a:i])   # append a sublist from prior name to current name
-        a = i                               # store value of new NAME
-    elif i == len(list_grams)-1:            # captures end of iteration over list_grams
-        sub_grams.append(list_grams[a:i+1]) # appends next NAME to first element in next sublist
+name_grams(list_grams, sub_grams)
 
-for i in range( len(sub_grams) ):
-    trigram = ngrams( sub_grams[i], 3)
-#    print("\n")
-#    for j in trigram:
-#        print(j)
+list_dict_grams = []
+list_dict_grams_sorted = []
+dict_grams(list_dict_grams)
 
-# adapted from https://stackoverflow.com/a/
+# Create new list_dict with only grams of count greater than 1
+#sorted(list_dict_grams[0][1].items(), key = lambda kv:(kv[1], kv[0]), reverse = True)
+
+'''
+# adapted from https://stackoverflow.com/a/28304388
 d = {} # create empty dictionary
-han = nltk.collocations.TrigramCollocationFinder.from_words(sub_grams[0][1:])   # prep all han words
-for ngram, freq in han.ngram_fd.items():                                        # iterate over object
+#han = nltk.collocations.TrigramCollocationFinder.from_words(sub_grams[0][1:])   # prep all han words
+#for ngram, freq in han.ngram_fd.items():                                        # iterate over object
+for ngram, freq in nltk.collocations.TrigramCollocationFinder.from_words(sub_grams[0][1:]).ngram_fd.items():                                        # iterate over object
     d[ngram] = freq                                                             # create key of trigram, value frequency
 #    print(ngram, freq)
-
+'''
 ''' TF-IDF section '''
 
 
