@@ -15,6 +15,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.corpus import stopwords
 import nltk
 from nltk import ngrams
+from wordcloud import WordCloud
 
 # operator
 # allows us to create more advanced sorting based on sublist element
@@ -125,6 +126,23 @@ def dict_grams(list_dict_grams, list_dict_grams_sorted):
                 break
         list_dict_grams_sorted.append([graph_name_values[n], dict(ldg_sort)])
     return(list_dict_grams, list_dict_grams_sorted)
+
+# send list of positive/negative word count which will be changed to a dictionary with
+# key [name] : value [count] that is turned into a wordcloud
+def make_wordcloud(words):
+    word_dict = {}                              # create temporary empty dictionary
+    for i in range( len(words) ):               # iterate through pos/neg word list
+        word_dict[words[i][0]] = words[i][1]    # make the key the current word & value the count
+    wc = WordCloud(
+        background_color="white", 
+        width=1600, height=800, 
+        max_words=200, min_font_size = 12,
+        scale=3, normalize_plurals=False).generate_from_frequencies(word_dict)
+    fig = plt.figure(1, figsize=(8, 4), dpi = 200)
+    plt.axis('off')
+    plt.imshow(wc)
+    plt.show()
+    return()
 
 # Datasets to be used in analysis
 file_str = "datasets/datasets_25491_32521_SW_EpisodeV.txt"
@@ -308,7 +326,6 @@ ax1.pie(graph_line_values, labels = graph_name_values, autopct='%1.1f%%', shadow
 ax2.pie(graph_word_values, labels = graph_name_values, autopct='%1.1f%%', shadow = True, colors = graph_colors)
 fig.set_size_inches(11, 8.5)
 plt.show()
-'''
 
 # Positive & Negative Double Bar
 # https://scriptverse.academy/tutorials/python-matplotlib-bar-chart.html
@@ -325,8 +342,12 @@ ax.set_xticklabels(graph_name_values[0:7])
 ax.legend()
 fig.set_size_inches(11, 8.5)
 plt.show()
+'''
 
 
+# WordCloud creation
+make_wordcloud(pos_words)
+make_wordcloud(neg_words)
 
 ''' nGrams Section '''
 list_grams = []
