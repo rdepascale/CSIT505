@@ -129,7 +129,8 @@ def dict_grams(list_dict_grams, list_dict_grams_sorted):
 
 # send list of positive/negative word count which will be changed to a dictionary with
 # key [name] : value [count] that is turned into a wordcloud
-def make_wordcloud(words):
+# send len(list) for max word size
+def make_wordcloud(words, word_length):
     word_dict = {}                              # create temporary empty dictionary
     for i in range( len(words) ):               # iterate through pos/neg word list
         word_dict[words[i][0]] = words[i][1]    # make the key the current word & value the count
@@ -137,7 +138,7 @@ def make_wordcloud(words):
     wc = WordCloud(
         background_color="white", 
         width=1600, height=800, 
-        max_words=200, min_font_size = 12,
+        max_words= word_length, min_font_size = 12,
         scale=3, normalize_plurals=False).generate_from_frequencies(word_dict)
     fig = plt.figure(1, figsize=(8, 4), dpi = 200)
     plt.axis('off')
@@ -177,7 +178,7 @@ def single_bar(data, xlabel, ylabel, title, n):
     fig.tight_layout()
     fig = matplotlib.pyplot.gcf()
     fig.set_size_inches(11, 8.5)
-    plt.bar(graph_name_values[0:n], graph_word_values[0:n], color = graph_colors)
+    plt.bar(graph_name_values[0:n], data[0:n], color = graph_colors)
     plt.grid(axis = 'y')
     plt.show()
     return
@@ -300,27 +301,29 @@ for i in range( 8, len(line_values) ):
     graph_neg_values[7] += line_values[i][4]
 '''
 pie_chart(graph_line_values, 'Episode V Percentage of Line Count Share', 8)
-pie_chart(graph_line_values, 'Episode V Percentage of Line Count Share', 7)
+pie_chart(graph_line_values, 'Episode V Percentage of Line Count Share Top 7', 7)
 pie_chart(graph_word_values, 'Episode V Percentage of Word Count Share', 8)
-pie_chart(graph_word_values, 'Episode V Percentage of Word Count Share', 7)
-pie_chart(graph_pos_values, 'Episode V Percentage of Positive Word Count Share', 7)
-pie_chart(graph_neg_values, 'Episode V Percentage of Negative Word Count Share', 7)
+pie_chart(graph_word_values, 'Episode V Percentage of Word Count Share Top 7', 7)
+pie_chart(graph_pos_values, 'Episode V Percentage of Positive Word Count Share Top 7', 7)
+pie_chart(graph_neg_values, 'Episode V Percentage of Negative Word Count Share Top 7', 7)
 double_bar('Lines', graph_line_values, 'Words', graph_word_values, 'Character', 'Count', 'Episode V Line & Word Counts per Character', 8)
-double_bar('Lines', graph_line_values, 'Words', graph_word_values, 'Character', 'Count', 'Episode V Line & Word Counts per Character', 7)
+double_bar('Lines', graph_line_values, 'Words', graph_word_values, 'Character', 'Count', 'Episode V Line & Word Counts per Character Top 7', 7)
 single_bar(graph_word_values, 'Character', 'Count', 'Episode V Word Count per Character', 8)
-single_bar(graph_word_values, 'Character', 'Count', 'Episode V Word Count per Character', 7)
+single_bar(graph_word_values, 'Character', 'Count', 'Episode V Word Count per Character Top 7', 7)
 single_bar(graph_pos_values, 'Character', 'Count', 'Episode V Positive Word Count per Character', 8)
-single_bar(graph_pos_values, 'Character', 'Count', 'Episode V Positive Word Count per Character', 7)
-single_bar(graph_pos_values, 'Character', 'Count', 'Episode V Negative Word Count per Character', 8)
-single_bar(graph_pos_values, 'Character', 'Count', 'Episode V Negative Word Count per Character', 7)
-double_bar('Positive Words', graph_pos_values, 'Negative Words', graph_neg_values, 'Character', 'Count', 'Positive & Negative Word Counts per Character', 7)
+single_bar(graph_pos_values, 'Character', 'Count', 'Episode V Positive Word Count per Character Top 7', 7)
+single_bar(graph_neg_values, 'Character', 'Count', 'Episode V Negative Word Count per Character', 8)
+single_bar(graph_neg_values, 'Character', 'Count', 'Episode V Negative Word Count per Character Top 7', 7)
+double_bar('Positive Words', graph_pos_values, 'Negative Words', graph_neg_values, 'Character', 'Count', 'Positive & Negative Word Counts per Character', 8)
+double_bar('Positive Words', graph_pos_values, 'Negative Words', graph_neg_values, 'Character', 'Count', 'Positive & Negative Word Counts per Character Top 7', 7)
 '''
 ''' WordCloud Section '''
-'''make_wordcloud(pos_words)
+make_wordcloud(pos_words, len(pos_words))
+make_wordcloud(neg_words, len(neg_words))
 make_wordcloud(neg_words)
 '''
 
-
+'''
 ''' nGrams Section '''
 '''list_grams = []
 sub_grams = []
