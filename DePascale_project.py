@@ -129,31 +129,26 @@ def dict_grams(list_dict_grams, list_dict_grams_sorted):
 
 # send list of word count which will be changed to a dictionary with
 # key [name] : value [count] that is turned into a wordcloud
-# send len(list) for max word size
-def make_wordcloud(words, word_length):
+# len(list) used max word size
+def make_wordcloud(words):
     word_dict = {}                              # create temporary empty dictionary
+    if type(words) == dict:                     # if a dictionary is sent in
+        temp = []                               # make a temporary list
+        for k, v in words.items():              # iterate through the dictionary
+            temp.append([' '.join(k), v])       # turn the tuples to string & make sublist [string of key, count]
+        words = temp                            # make set the expected list to the just created one
     for i in range( len(words) ):               # iterate through pos/neg word list
         word_dict[words[i][0]] = words[i][1]    # make the key the current word & value the count
     # generation from dictionary adapted from: https://stackoverflow.com/a/51895005
     wc = WordCloud(
         background_color="white", 
         width = 1600, height = 800, 
-        max_words = word_length, min_font_size = 12,
+        max_words = len(words), min_font_size = 12,
         scale = 3, normalize_plurals = False).generate_from_frequencies(word_dict)
     fig = plt.figure(1, figsize = (8, 4), dpi = 200)
     plt.axis('off')
     plt.imshow(wc)
     plt.show()
-    return()
-
-# send a dictionary of k:v (tuple):integer to be turned to string:int
-# then sent to make_wordcloud for wordcloud generation, this will be merged
-# into the make_wrodcloud function
-def temp_cloud(temp_dict):
-    temp = []
-    for k, v in temp_dict.items():
-        temp.append([' '.join(k), v])
-    make_wordcloud(temp, len(temp))
     return()
 
 # Double Bar
@@ -342,18 +337,65 @@ dict_grams(list_dict_grams, list_dict_grams_sorted)
 ''' WordCloud Section '''
 '''
 # send list where sublist has first two elements [word, count] to generate wordcloud
-make_wordcloud(pos_words, len(pos_words))
-make_wordcloud(neg_words, len(neg_words))
-# send dictionary to be turned into list with sublist [word, count]
-# then sent to make_wordcloud
-# this function will be merged with make_wordcloud
-temp_cloud(list_dict_grams_sorted[0][1])    # Han
-temp_cloud(list_dict_grams_sorted[1][1])    # Luke
-temp_cloud(list_dict_grams_sorted[2][1])    # Leia
-temp_cloud(list_dict_grams_sorted[3][1])    # Threepio
-temp_cloud(list_dict_grams_sorted[4][1])    # Lando
-temp_cloud(list_dict_grams_sorted[5][1])    # Vader
-temp_cloud(list_dict_grams_sorted[6][1])    # Yoda
+make_wordcloud(pos_words)                       # Positive Words
+make_wordcloud(neg_words)                       # Negative Words
+# if a dictionary is sent the function will recognize this and adjust it to the needed
+# sublist [string of key, value] setup to work properly
+make_wordcloud(list_dict_grams_sorted[0][1])    # Han
+make_wordcloud(list_dict_grams_sorted[1][1])    # Luke
+make_wordcloud(list_dict_grams_sorted[2][1])    # Leia
+make_wordcloud(list_dict_grams_sorted[3][1])    # Threepio
+make_wordcloud(list_dict_grams_sorted[4][1])    # Lando
+make_wordcloud(list_dict_grams_sorted[5][1])    # Vader
+make_wordcloud(list_dict_grams_sorted[6][1])    # Yoda
 '''
 
 ''' TF-IDF Section '''
+# use sub_grams vs entire script to find unique words from each top7 and compare those vs the whole script?
+# list_lines has everything in it, you need to just prune out the speaker names and drop the sublists
+# gram = sub_grams
+# lines = list_lines
+# n = character in top 7 from sub_grams
+# m = max number of words returned
+# this_string = string of all specified HERO dialog
+# that_string = string of ALL dialog
+def prep_tfidf(gram, lines, n, m):
+    this_string = ''
+    for i in range( 1, len(gram[n]) ):
+        this_string = this_string + gram[n][i] + " "
+    this_string = this_string[ :len(this_string)-1 ]
+    that_string = ''
+    for i in range(len(lines)):
+        for j in range( 1, len(lines[i]) ):
+            that_string = that_string + lines[i][j] + " "
+    that_string = that_string[ :len(that_string)-1 ]
+    vectorizer = TfidfVectorizer( stop_words='english', max_features = m )
+    vectors = vectorizer.fit_transform([this_string, that_string])
+    feature_names = vectorizer.get_feature_names()
+    dense = vectors.todense()
+    denselist = dense.tolist()
+    df = pd.DataFrame(denselist, columns=feature_names )
+    print(df)
+    return()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
