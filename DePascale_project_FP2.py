@@ -127,7 +127,7 @@ def dict_grams(list_dict_grams, list_dict_grams_sorted):
         list_dict_grams_sorted.append([graph_name_values[n], dict(ldg_sort)])
     return(list_dict_grams, list_dict_grams_sorted)
 
-# send list of positive/negative word count which will be changed to a dictionary with
+# send list of word count which will be changed to a dictionary with
 # key [name] : value [count] that is turned into a wordcloud
 # send len(list) for max word size
 def make_wordcloud(words, word_length):
@@ -146,12 +146,15 @@ def make_wordcloud(words, word_length):
     plt.show()
     return()
 
+# send a dictionary of k:v (tuple):integer to be turned to string:int
+# then sent to make_wordcloud for wordcloud generation, this will be merged
+# into the make_wrodcloud function
 def temp_cloud(temp_dict):
     temp = []
     for k, v in temp_dict.items():
         temp.append([' '.join(k), v])
     make_wordcloud(temp, len(temp))
-    return
+    return()
 
 # Double Bar
 # Send list data series, strings for [xlabel, ylabel, title] and n value [7 = top 7 speakers, 8 = top 7 + "others"]
@@ -325,22 +328,25 @@ double_bar('Positive Words', graph_pos_values, 'Negative Words', graph_neg_value
 double_bar('Positive Words', graph_pos_values, 'Negative Words', graph_neg_values, 'Character', 'Count', 'Positive & Negative Word Counts per Character Top 7', 7)
 '''
 
-''' WordCloud Section '''
-'''
-make_wordcloud(pos_words, len(pos_words))
-make_wordcloud(neg_words, len(neg_words))
-'''
-
-
 ''' nGrams Section '''
+# create a list with [character name, all text]
 list_grams = []
 sub_grams = []
 name_grams(list_grams, sub_grams)
 
+# send list above to create  a list with [character name, dictionary {trigram:count}]
 list_dict_grams = []
 list_dict_grams_sorted = []
 dict_grams(list_dict_grams, list_dict_grams_sorted)
 
+''' WordCloud Section '''
+'''
+# send list where sublist has first two elements [word, count] to generate wordcloud
+make_wordcloud(pos_words, len(pos_words))
+make_wordcloud(neg_words, len(neg_words))
+# send dictionary to be turned into list with sublist [word, count]
+# then sent to make_wordcloud
+# this function will be merged with make_wordcloud
 temp_cloud(list_dict_grams_sorted[0][1])    # Han
 temp_cloud(list_dict_grams_sorted[1][1])    # Luke
 temp_cloud(list_dict_grams_sorted[2][1])    # Leia
@@ -348,5 +354,6 @@ temp_cloud(list_dict_grams_sorted[3][1])    # Threepio
 temp_cloud(list_dict_grams_sorted[4][1])    # Lando
 temp_cloud(list_dict_grams_sorted[5][1])    # Vader
 temp_cloud(list_dict_grams_sorted[6][1])    # Yoda
+'''
 
 ''' TF-IDF Section '''
