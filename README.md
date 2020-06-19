@@ -12,7 +12,24 @@ Analysis of Star Wars Episode V script to look for insights into characters base
       
 This is still a work in progress!
 
+# Milestone 2 Report - Update from 6/12/2020
 
+# Graph Work
+The double-bar, bar, and pie charts are no longer hard coded into the program.  Each is now implemented through function calls such that a list for the data series, strings for axis label & title, and an n-value for top 7 or inclusion of rest of cast as "others" is possible.
+
+# nGrams Work
+Trigrams were decided on as they produced the most balance between number of results and having values returned greater than 1.  The code to find the Trigrams is done through a function call specifically looking for trigrams but can be altered to accomidate an n-value specifying greater/smaller than trigram.  The trigrams are stored in a list where each element is a sublist of ['NAME', dictionary of trigrams] so that using indexing on the list can provide WHO the directory is associated with to avoid confusion.
+
+# WordCloud Work
+A function was written to generate WordClouds from data passed into it using len() on the data passed in to determine the maximum number of words.  WordClouds are provided for positive & negative word count as well as the trigrams for the top 7 characters for trigrams that had counts greater than 1, sending in a different dataset of trigrams can show ALL of them if desired although the WordCloud starts looking rather cluttered.
+
+# General Work
+This was a lot of code cleanup as well making sure that functions were robust enough to handle the various data types sent to them.  A lot of time was spent looking at what nGrams were returned (bi/tri/etc) and what their counts were.  The work on nGrams was paused to transition to the WordCloud for a sanity check as well as knowing this could be a useful method of visually displaying the nGram results.  As of right now there is a funtion temp_cloud used to turn the dictionary to the data type make_cloud is expecting then call make_cloud from within, this should be merged into make_cloud for the final result as a datatype check combined with an if statement should enable a single function to handle both tasks.  At this moment the "shippable product" took priority over deep bug wrangling.
+
+# TF-IDF
+This should be the next/final step after handling initial code work next week mentioned above.  I still have the script/character lines/etc all in various datatypes available within the program so finding an implementation that works given my data arrangement will be the key.  Initial ideas right now are to take the trigrams, break them into unique words for each of the top 7 characters then compare that against the entire script, as I read deeper and conduct additional testing next week this will solidify into a more concrete/numeric piece of data to go with the visual WordCloud work from this week.
+
+=======================================================
 # Milestone 1 Report - What Has Been Accomplished So Far
 The following datasets have been obtained:
   - Star Wars Episode V script: https://www.kaggle.com/xvivancos/star-wars-movie-scripts/data?select=SW_EpisodeV.txt
@@ -44,7 +61,7 @@ Basic graphic representation has been done through sorting the initial list_tall
   - Double bar chart of #lines/#words for the 8 categories.
   - Bar chart of # words for the 8 categories.
   - Bar chart of # lines for the 8 categories.
-  - Pie chars of # lines / #words for the 8 categories.
+  - Pie charts of # lines / #words for the 8 categories.
 
 # Next Steps
 The deep analysis of the top 7 characters and positive/negative words is now the focus.  I am at a stage where all of the data is in a form I can use for whatever is most appropriate, which is the key, figuring out WHAT is the most appropriate step.  The frequency characters are using positive/negative words overall and then which (if any) word in that list is most frequent could be an avenue.  I have done some reading on implementing tf-idf (using pandas) and ngrams (using ntlk) in Python 3 and since all the textual data is “there” now I see running my data through these modules to be the crux of the work toward Milestone 2.
