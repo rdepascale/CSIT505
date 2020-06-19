@@ -29,8 +29,8 @@ This was a lot of code cleanup as well making sure that functions were robust en
 # TF-IDF
 This should be the next/final step after handling initial code work next week mentioned above.  I still have the script/character lines/etc all in various datatypes available within the program so finding an implementation that works given my data arrangement will be the key.  Initial ideas right now are to take the trigrams, break them into unique words for each of the top 7 characters then compare that against the entire script, as I read deeper and conduct additional testing next week this will solidify into a more concrete/numeric piece of data to go with the visual WordCloud work from this week.
 
-=======================================================
-# Milestone 1 Report - What Has Been Accomplished So Far
+# Milestone 1 Report
+# What Has Been Accomplished So Far
 The following datasets have been obtained:
   - Star Wars Episode V script: https://www.kaggle.com/xvivancos/star-wars-movie-scripts/data?select=SW_EpisodeV.txt
   - List of Positive Words: https://positivewordsresearch.com/list-of-positive-words/
