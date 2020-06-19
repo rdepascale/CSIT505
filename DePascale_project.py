@@ -105,7 +105,7 @@ def name_grams(list_grams, sub_grams):
     return(list_grams, sub_grams)
 
 # takes a blank list as input and populates it with sublist of ['NAME', {dict of trigrams}]
-# additional output has trims dictionaries of keys where value is 1
+# sorted output has dictionaries of keys where value is 1 removed
 def dict_grams(list_dict_grams, list_dict_grams_sorted):
     for i in range( len(graph_name_values)-1 ):
         d = {}
@@ -137,14 +137,21 @@ def make_wordcloud(words, word_length):
     # generation from dictionary adapted from: https://stackoverflow.com/a/51895005
     wc = WordCloud(
         background_color="white", 
-        width=1600, height=800, 
-        max_words= word_length, min_font_size = 12,
-        scale=3, normalize_plurals=False).generate_from_frequencies(word_dict)
-    fig = plt.figure(1, figsize=(8, 4), dpi = 200)
+        width = 1600, height = 800, 
+        max_words = word_length, min_font_size = 12,
+        scale = 3, normalize_plurals = False).generate_from_frequencies(word_dict)
+    fig = plt.figure(1, figsize = (8, 4), dpi = 200)
     plt.axis('off')
     plt.imshow(wc)
     plt.show()
     return()
+
+def temp_cloud(temp_dict):
+    temp = []
+    for k, v in temp_dict.items():
+        temp.append([' '.join(k), v])
+    make_wordcloud(temp, len(temp))
+    return
 
 # Double Bar
 # Send list data series, strings for [xlabel, ylabel, title] and n value [7 = top 7 speakers, 8 = top 7 + "others"]
@@ -317,35 +324,29 @@ single_bar(graph_neg_values, 'Character', 'Count', 'Episode V Negative Word Coun
 double_bar('Positive Words', graph_pos_values, 'Negative Words', graph_neg_values, 'Character', 'Count', 'Positive & Negative Word Counts per Character', 8)
 double_bar('Positive Words', graph_pos_values, 'Negative Words', graph_neg_values, 'Character', 'Count', 'Positive & Negative Word Counts per Character Top 7', 7)
 '''
+
 ''' WordCloud Section '''
+'''
 make_wordcloud(pos_words, len(pos_words))
 make_wordcloud(neg_words, len(neg_words))
-make_wordcloud(neg_words)
 '''
 
-'''
+
 ''' nGrams Section '''
-'''list_grams = []
+list_grams = []
 sub_grams = []
 name_grams(list_grams, sub_grams)
 
 list_dict_grams = []
 list_dict_grams_sorted = []
-dict_grams(list_dict_grams, list_dict_grams_sorted)'''
+dict_grams(list_dict_grams, list_dict_grams_sorted)
 
-'''
-for n in range( len(list_dict_grams) ):
-    ldg_sort = sorted(list_dict_grams[n][1].items(), key = lambda kv:(kv[1], kv[0]), reverse = True)
-    i = 0
-    while True:
-        try:
-            if ldg_sort[i][1] < 2:
-                del ldg_sort[i]
-            else:
-                i += 1
-        except IndexError:
-            break
-    list_dict_grams[n][1] = dict(ldg_sort)
-'''
+temp_cloud(list_dict_grams_sorted[0][1])    # Han
+temp_cloud(list_dict_grams_sorted[1][1])    # Luke
+temp_cloud(list_dict_grams_sorted[2][1])    # Leia
+temp_cloud(list_dict_grams_sorted[3][1])    # Threepio
+temp_cloud(list_dict_grams_sorted[4][1])    # Lando
+temp_cloud(list_dict_grams_sorted[5][1])    # Vader
+temp_cloud(list_dict_grams_sorted[6][1])    # Yoda
 
-''' TF-IDF section '''
+''' TF-IDF Section '''
