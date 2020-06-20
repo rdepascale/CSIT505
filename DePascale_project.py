@@ -351,12 +351,13 @@ make_wordcloud(list_dict_grams_sorted[6][1])    # Yoda
 '''
 
 ''' TF-IDF Section '''
+# https://towardsdatascience.com/natural-language-processing-feature-engineering-using-tf-idf-e8b9d00e7e76
 # use sub_grams vs entire script to find unique words from each top7 and compare those vs the whole script?
 # list_lines has everything in it, you need to just prune out the speaker names and drop the sublists
-# gram = sub_grams
-# lines = list_lines
-# n = character in top 7 from sub_grams
-# m = max number of words returned
+# gram = sub_grams = [character name, every word they say in the script]
+# lines = list_lines = [character name, line of dialog]
+# n = character in top 7 from sub_grams (0 to 6)
+# m = max number of words returned (None disables this)
 # this_string = string of all specified HERO dialog
 # that_string = string of ALL dialog
 def prep_tfidf(gram, lines, n, m):
@@ -369,33 +370,15 @@ def prep_tfidf(gram, lines, n, m):
         for j in range( 1, len(lines[i]) ):
             that_string = that_string + lines[i][j] + " "
     that_string = that_string[ :len(that_string)-1 ]
-    vectorizer = TfidfVectorizer( stop_words='english', max_features = m )
+    vectorizer = TfidfVectorizer( stop_words='english', max_features = m)
     vectors = vectorizer.fit_transform([this_string, that_string])
     feature_names = vectorizer.get_feature_names()
     dense = vectors.todense()
     denselist = dense.tolist()
     df = pd.DataFrame(denselist, columns=feature_names )
-    print(df)
-    return()
+    print("\n",gram[n][0],"\n",df)   
+    return(df)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+temp_tfidf = []
+for i in range( len(sub_grams)):
+    temp_tfidf.append(prep_tfidf(sub_grams, list_lines, i, 10))
