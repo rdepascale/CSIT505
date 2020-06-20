@@ -360,16 +360,12 @@ make_wordcloud(list_dict_grams_sorted[6][1])    # Yoda
 # m = max number of words returned (None disables this)
 # this_string = string of all specified HERO dialog
 # that_string = string of ALL dialog
-def prep_tfidf(gram, lines, n, m):
+def two_tfidf(gram, lines, n, m):
     this_string = ''
-    for i in range( 1, len(gram[n]) ):
-        this_string = this_string + gram[n][i] + " "
-    this_string = this_string[ :len(this_string)-1 ]
+    this_string = ' '.join(gram[n][1:])
     that_string = ''
     for i in range(len(lines)):
-        for j in range( 1, len(lines[i]) ):
-            that_string = that_string + lines[i][j] + " "
-    that_string = that_string[ :len(that_string)-1 ]
+        that_string = ' '.join(lines[i][1:])
     vectorizer = TfidfVectorizer( stop_words='english', max_features = m)
     vectors = vectorizer.fit_transform([this_string, that_string])
     feature_names = vectorizer.get_feature_names()
@@ -378,7 +374,35 @@ def prep_tfidf(gram, lines, n, m):
     df = pd.DataFrame(denselist, columns=feature_names )
     print("\n",gram[n][0],"\n",df)   
     return(df)
-
+'''
 temp_tfidf = []
 for i in range( len(sub_grams)):
     temp_tfidf.append(prep_tfidf(sub_grams, list_lines, i, 10))
+'''
+def hero_tfidf(gram, m):
+    hero = []
+    for i in range(len(gram)):
+        hero.append(' '.join(gram[i][1:]))
+    vectorizer = TfidfVectorizer( stop_words='english', max_features = m, min_df = 0.1)
+    vectors = vectorizer.fit_transform([hero[0], hero[1], hero[2], hero[3], hero[4], hero[5], hero[6]])
+    feature_names = vectorizer.get_feature_names()
+    dense = vectors.todense()
+    denselist = dense.tolist()
+    df2 = pd.DataFrame(denselist, columns=feature_names )
+    return(df2)
+temp = hero_tfidf(sub_grams, None)
+'''hero_list = []
+for i in range(len(sub_grams)):
+    hero_list.append(' '.join(sub_grams[i][1:]))
+n = 0
+m = 10
+that_string = ''
+for i in range(len(list_lines)):
+    that_string += ' '.join(list_lines[i][1:])
+that_string = that_string[ :len(that_string)-1 ]
+vectorizer = TfidfVectorizer( stop_words='english', max_features = m)
+vectors = vectorizer.fit_transform([hero_list[0], hero_list[1], hero_list[2], hero_list[3], hero_list[4], hero_list[5], hero_list[6], that_string])
+feature_names = vectorizer.get_feature_names()
+dense = vectors.todense()
+denselist = dense.tolist()
+df = pd.DataFrame(denselist, columns=feature_names )'''
