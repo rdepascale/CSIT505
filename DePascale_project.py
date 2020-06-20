@@ -15,7 +15,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.corpus import stopwords
 import nltk
 from nltk import ngrams
-from wordcloud import WordCloud
+from wordcloud import WordCloud, STOPWORDS
+from collections import Counter
 
 # operator
 # allows us to create more advanced sorting based on sublist element
@@ -86,6 +87,7 @@ def tally_amend(tally, words, n):
                     tally[i][n] +=1
     return tally
 
+
 # takes names of focus characters and creates a list with [name1, all dialog, name2, all dialog, etc.]
 # takes prior list and sublists [[name1, all dialog], [name1, all dialog], etc.]
 def name_grams(list_grams, sub_grams):
@@ -130,7 +132,11 @@ def dict_grams(list_dict_grams, list_dict_grams_sorted):
 # send list of word count which will be changed to a dictionary with
 # key [name] : value [count] that is turned into a wordcloud
 # len(list) used max word size
-def make_wordcloud(words):
+# title used for file saving
+# color is optional
+def make_wordcloud(words, color = None):
+    if color == None:
+        color = "white"
     word_dict = {}                              # create temporary empty dictionary
     if type(words) == dict:                     # if a dictionary is sent in
         temp = []                               # make a temporary list
@@ -141,10 +147,10 @@ def make_wordcloud(words):
         word_dict[words[i][0]] = words[i][1]    # make the key the current word & value the count
     # generation from dictionary adapted from: https://stackoverflow.com/a/51895005
     wc = WordCloud(
-        background_color="white", 
+        background_color=color, 
         width = 1600, height = 800, 
         max_words = len(words), min_font_size = 12,
-        scale = 3, normalize_plurals = False).generate_from_frequencies(word_dict)
+        scale = 3, normalize_plurals = False, stopwords = set(STOPWORDS)).generate_from_frequencies(word_dict)
     fig = plt.figure(1, figsize = (8, 4), dpi = 200)
     plt.axis('off')
     plt.imshow(wc)
@@ -334,6 +340,24 @@ list_dict_grams = []
 list_dict_grams_sorted = []
 dict_grams(list_dict_grams, list_dict_grams_sorted)
 
+# frequencies
+# words = sub_grams [character name, all text]
+# n = top n words to print
+def frequency(words):
+    a = []
+    for i in range( len(words)):
+        d = dict(Counter(words[i][1:]))
+        a.append( [ words[i][0], d ] )
+        b = []
+        for k, v in d.items():
+            b.append([k,v])
+            a[i][1] = sorted(b, key = operator.itemgetter(1), reverse = True)
+    return(a)
+freq_list = frequency(sub_grams)
+'''
+for i in range( len(freq_list) ):
+    make_wordcloud( freq_list[i][1], graph_colors[i] )
+'''
 ''' WordCloud Section '''
 '''
 # send list where sublist has first two elements [word, count] to generate wordcloud
@@ -341,13 +365,33 @@ make_wordcloud(pos_words)                       # Positive Words
 make_wordcloud(neg_words)                       # Negative Words
 # if a dictionary is sent the function will recognize this and adjust it to the needed
 # sublist [string of key, value] setup to work properly
-make_wordcloud(list_dict_grams_sorted[0][1])    # Han
-make_wordcloud(list_dict_grams_sorted[1][1])    # Luke
-make_wordcloud(list_dict_grams_sorted[2][1])    # Leia
-make_wordcloud(list_dict_grams_sorted[3][1])    # Threepio
-make_wordcloud(list_dict_grams_sorted[4][1])    # Lando
-make_wordcloud(list_dict_grams_sorted[5][1])    # Vader
-make_wordcloud(list_dict_grams_sorted[6][1])    # Yoda
+# Han nGrams, All Words, Pos Words, Neg Words
+make_wordcloud(list_dict_grams_sorted[0][1])
+make_wordcloud(freq_list[0][1], graph_colors[0])
+
+# Luke nGrams, All Words, Pos Words, Neg Words
+make_wordcloud(list_dict_grams_sorted[1][1])
+make_wordcloud(freq_list[1][1], graph_colors[1])
+
+# Leia nGrams, All Words, Pos Words, Neg Words
+make_wordcloud(list_dict_grams_sorted[2][1])
+make_wordcloud(freq_list[2][1], graph_colors[2])
+
+# Threepio nGrams, All Words, Pos Words, Neg Words
+make_wordcloud(list_dict_grams_sorted[3][1])
+make_wordcloud(freq_list[3][1], graph_colors[3])
+
+# Lando nGrams, All Words, Pos Words, Neg Words
+make_wordcloud(list_dict_grams_sorted[4][1])
+make_wordcloud(freq_list[4][1], graph_colors[4])
+
+# Vader nGrams, All Words, Pos Words, Neg Words
+make_wordcloud(list_dict_grams_sorted[5][1])
+make_wordcloud(freq_list[5][1], graph_colors[5])
+
+# Yoda nGrams, All Words, Pos Words, Neg Words
+make_wordcloud(list_dict_grams_sorted[6][1])
+make_wordcloud(freq_list[6][1], graph_colors[6])
 '''
 
 ''' TF-IDF Section '''
@@ -365,7 +409,7 @@ def two_tfidf(gram, lines, n, m):
     this_string = ' '.join(gram[n][1:])
     that_string = ''
     for i in range(len(lines)):
-        that_string = ' '.join(lines[i][1:])
+        that_string += ' '.join(lines[i][1:])
     vectorizer = TfidfVectorizer( stop_words='english', max_features = m)
     vectors = vectorizer.fit_transform([this_string, that_string])
     feature_names = vectorizer.get_feature_names()
@@ -391,18 +435,3 @@ def hero_tfidf(gram, m):
     df2 = pd.DataFrame(denselist, columns=feature_names )
     return(df2)
 temp = hero_tfidf(sub_grams, None)
-'''hero_list = []
-for i in range(len(sub_grams)):
-    hero_list.append(' '.join(sub_grams[i][1:]))
-n = 0
-m = 10
-that_string = ''
-for i in range(len(list_lines)):
-    that_string += ' '.join(list_lines[i][1:])
-that_string = that_string[ :len(that_string)-1 ]
-vectorizer = TfidfVectorizer( stop_words='english', max_features = m)
-vectors = vectorizer.fit_transform([hero_list[0], hero_list[1], hero_list[2], hero_list[3], hero_list[4], hero_list[5], hero_list[6], that_string])
-feature_names = vectorizer.get_feature_names()
-dense = vectors.todense()
-denselist = dense.tolist()
-df = pd.DataFrame(denselist, columns=feature_names )'''
