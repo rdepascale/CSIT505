@@ -158,7 +158,7 @@ def make_wordcloud(words, name, title, color = None):
         max_words = len(words), min_font_size = 12,
         scale = 3, normalize_plurals = False, stopwords = set(STOPWORDS)).generate_from_frequencies(word_dict)
     fig = plt.figure(1, figsize = (8, 4), dpi = 200)
-    wc.to_file("WordCloud_"+name+"_"+title+".png")
+    wc.to_file(film+"_WordCloud_"+name+"_"+title+".png")
 #    comment line above and uncomment lines below to graph in program rather than save file
 #    plt.axis('off')
 #    plt.imshow(wc)
@@ -185,7 +185,7 @@ def double_bar(legend1, data1, legend2, data2, xlabel, ylabel, title, n):
     fig.set_size_inches(11, 8.5)
     plt.grid(axis = 'y')
     #plt.show()
-    plt.savefig(title+".png")
+    plt.savefig(film+"_"+title+".png")
     return
 
 
@@ -203,7 +203,7 @@ def single_bar(data, xlabel, ylabel, title, n):
     plt.bar(graph_name_values[0:n], data[0:n], color = graph_colors)
     plt.grid(axis = 'y')
     #plt.show()
-    plt.savefig(title+".png")
+    plt.savefig(film+"_"+title+".png")
     return
 
 
@@ -218,28 +218,28 @@ def pie_chart(data, title, n):
     ax.pie(data[0:n], labels = graph_name_values[0:n], autopct='%1.1f%%', shadow = True, colors = graph_colors[0:n])
     fig.set_size_inches(11, 8.5)
     #plt.show()
-    plt.savefig(title+".png")
+    plt.savefig(film+"_"+title+".png")
     return
 
 
 # simple function call to output all graphs as .png files in current working directory
 def create_graphs():
-    pie_chart(graph_line_values, 'Episode V Percentage of Line Count Share Top 8', 8)
-    pie_chart(graph_line_values, 'Episode V Percentage of Line Count Share Top 7', 7)
-    pie_chart(graph_word_values, 'Episode V Percentage of Word Count Share Top 8', 8)
-    pie_chart(graph_word_values, 'Episode V Percentage of Word Count Share Top 7', 7)
-    pie_chart(graph_pos_values, 'Episode V Percentage of Positive Word Count Share Top 7', 7)
-    pie_chart(graph_neg_values, 'Episode V Percentage of Negative Word Count Share Top 7', 7)
+    pie_chart(graph_line_values, film[3:]+' Percentage of Line Count Share Top 8', 8)
+    pie_chart(graph_line_values, film[3:]+' Percentage of Line Count Share Top 7', 7)
+    pie_chart(graph_word_values, film[3:]+' Percentage of Word Count Share Top 8', 8)
+    pie_chart(graph_word_values, film[3:]+' Percentage of Word Count Share Top 7', 7)
+    pie_chart(graph_pos_values, film[3:]+' Percentage of Positive Word Count Share Top 7', 7)
+    pie_chart(graph_neg_values, film[3:]+' Percentage of Negative Word Count Share Top 7', 7)
     double_bar('Lines', graph_line_values, 'Words', graph_word_values, 'Character', 'Count', 'Episode V Line & Word Counts per Character Top 8', 8)
     double_bar('Lines', graph_line_values, 'Words', graph_word_values, 'Character', 'Count', 'Episode V Line & Word Counts per Character Top 7', 7)
-    single_bar(graph_word_values, 'Character', 'Count', 'Episode V Word Count per Character Top 8', 8)
-    single_bar(graph_word_values, 'Character', 'Count', 'Episode V Word Count per Character Top 7', 7)
-    single_bar(graph_pos_values, 'Character', 'Count', 'Episode V Positive Word Count per Character Top 8', 8)
-    single_bar(graph_pos_values, 'Character', 'Count', 'Episode V Positive Word Count per Character Top 7', 7)
-    single_bar(graph_neg_values, 'Character', 'Count', 'Episode V Negative Word Count per Character Top 8', 8)
-    single_bar(graph_neg_values, 'Character', 'Count', 'Episode V Negative Word Count per Character Top 7', 7)
-    double_bar('Positive Words', graph_pos_values, 'Negative Words', graph_neg_values, 'Character', 'Count', 'Episode V Positive & Negative Word Counts per Character Top 8', 8)
-    double_bar('Positive Words', graph_pos_values, 'Negative Words', graph_neg_values, 'Character', 'Count', 'Episode V Positive & Negative Word Counts per Character Top 7', 7)
+    single_bar(graph_word_values, 'Character', 'Count', film[3:]+' Word Count per Character Top 8', 8)
+    single_bar(graph_word_values, 'Character', 'Count', film[3:]+' Word Count per Character Top 7', 7)
+    single_bar(graph_pos_values, 'Character', 'Count', film[3:]+' Positive Word Count per Character Top 8', 8)
+    single_bar(graph_pos_values, 'Character', 'Count', film[3:]+' Positive Word Count per Character Top 7', 7)
+    single_bar(graph_neg_values, 'Character', 'Count', film[3:]+' Negative Word Count per Character Top 8', 8)
+    single_bar(graph_neg_values, 'Character', 'Count', film[3:]+' Negative Word Count per Character Top 7', 7)
+    double_bar('Positive Words', graph_pos_values, 'Negative Words', graph_neg_values, 'Character', 'Count', film[3:]+' Positive & Negative Word Counts per Character Top 8', 8)
+    double_bar('Positive Words', graph_pos_values, 'Negative Words', graph_neg_values, 'Character', 'Count', film[3:]+' Positive & Negative Word Counts per Character Top 7', 7)
     return()
 
 
@@ -326,11 +326,12 @@ def hero_tfidf(gram, lines, m, csv):
     return(df2)                                                     # DataFrame can be stored for additional variable if desired
 
 # Datasets to be used in analysis
-file_str = "datasets/datasets_25491_32521_SW_EpisodeV.txt"
+film = "SW_EpisodeV"
+file_str = "datasets/"+film+".txt"
 pos_word_str = "datasets/positive_words.txt"
 neg_word_str = "datasets/negative_words.txt"
 
-''' Import/Set-Up Star Wars Episode V Script '''
+''' Import/Set-Up Star Wars Script '''
 # read script into a list for manipulation
 # split at space, text lowercase, no punctuation
 # translate() adapted from:
@@ -462,52 +463,53 @@ hero_neg_words = hero_words(neg_word_tally)
 #def make_wordcloud(words, name, title, color = None):
 
 # send list where sublist has first two elements [word, count] to generate wordcloud
-'''make_wordcloud(pos_words, "All Characters", "Positive Words")   # Generate WordCloud of ALL Positive Words
-make_wordcloud(neg_words, "All Characters", "Negative Words")   # Generate WordCloud of ALL Negative Words'''
-'''
+make_wordcloud(pos_words, "All Characters", "Positive Words")   # Generate WordCloud of ALL Positive Words
+make_wordcloud(neg_words, "All Characters", "Negative Words")   # Generate WordCloud of ALL Negative Words
+
+# Word Clouds for Top 7
 # if a dictionary is sent the function will recognize this and adjust it to the needed
 # sublist [string of key, value] setup to work properly
-# Han nGrams, All Words, Pos Words, Neg Words
+# #1 nGrams, All Words, Pos Words, Neg Words
 make_wordcloud(list_dict_grams_sorted[0][1], "HAN", "Trigrams", graph_colors[0])
-make_wordcloud(freq_list[0][1], "HAN", "Frequent Words", graph_colors[0])
-make_wordcloud(hero_pos_words[0][1:], "HAN", "Positive Words", graph_colors[0])
-make_wordcloud(hero_neg_words[0][1:], "HAN", "Negative Words", graph_colors[0])
+make_wordcloud(freq_list[0][1], graph_name_values[0], "Frequent Words", graph_colors[0])
+make_wordcloud(hero_pos_words[0][1:], graph_name_values[0], "Positive Words", graph_colors[0])
+make_wordcloud(hero_neg_words[0][1:], graph_name_values[0], "Negative Words", graph_colors[0])
 
-# Luke nGrams, All Words, Pos Words, Neg Words
-make_wordcloud(list_dict_grams_sorted[1][1], "LUKE", "Trigrams", graph_colors[1])
-make_wordcloud(freq_list[1][1], "LUKE", "Frequent Words", graph_colors[1])
-make_wordcloud(hero_pos_words[1][1:], "LUKE", "Positive Words", graph_colors[1])
-make_wordcloud(hero_neg_words[1][1:], "Luke", "Negative Words", graph_colors[1])
+# #2 nGrams, All Words, Pos Words, Neg Words
+make_wordcloud(list_dict_grams_sorted[1][1], graph_name_values[1], "Trigrams", graph_colors[1])
+make_wordcloud(freq_list[1][1], graph_name_values[1], "Frequent Words", graph_colors[1])
+make_wordcloud(hero_pos_words[1][1:], graph_name_values[1], "Positive Words", graph_colors[1])
+make_wordcloud(hero_neg_words[1][1:], graph_name_values[1], "Negative Words", graph_colors[1])
 
-# Leia nGrams, All Words, Pos Words, Neg Words
-make_wordcloud(list_dict_grams_sorted[2][1], "LEIA", "Trigrams", graph_colors[2])
-make_wordcloud(freq_list[2][1], "LEIA", "Frequent Words", graph_colors[2])
-make_wordcloud(hero_pos_words[2][1:], "LEIA", "Positive Words", graph_colors[2])
-make_wordcloud(hero_neg_words[2][1:], "LEIA", "Negative Words", graph_colors[2])
+# #3 nGrams, All Words, Pos Words, Neg Words
+make_wordcloud(list_dict_grams_sorted[2][1], graph_name_values[2], "Trigrams", graph_colors[2])
+make_wordcloud(freq_list[2][1], graph_name_values[2], "Frequent Words", graph_colors[2])
+make_wordcloud(hero_pos_words[2][1:], graph_name_values[2], "Positive Words", graph_colors[2])
+make_wordcloud(hero_neg_words[2][1:], graph_name_values[2], "Negative Words", graph_colors[2])
 
-# Threepio nGrams, All Words, Pos Words, Neg Words
-make_wordcloud(list_dict_grams_sorted[3][1], "THREEPIO", "Trigrams", graph_colors[3])
-make_wordcloud(freq_list[3][1], "THREEPIO", "Frequent Words", graph_colors[3])
-make_wordcloud(hero_pos_words[3][1:], "THREEPIO", "Positive Words", graph_colors[3])
-make_wordcloud(hero_neg_words[3][1:], "THREEPIO", "Negative Words", graph_colors[3])
+# #4 nGrams, All Words, Pos Words, Neg Words
+make_wordcloud(list_dict_grams_sorted[3][1], graph_name_values[3], "Trigrams", graph_colors[3])
+make_wordcloud(freq_list[3][1], graph_name_values[3], "Frequent Words", graph_colors[3])
+make_wordcloud(hero_pos_words[3][1:], graph_name_values[3], "Positive Words", graph_colors[3])
+make_wordcloud(hero_neg_words[3][1:], graph_name_values[3], "Negative Words", graph_colors[3])
 
-# Lando nGrams, All Words, Pos Words, Neg Words
-make_wordcloud(list_dict_grams_sorted[4][1], "LANDO", "Trigrams", graph_colors[4])
-make_wordcloud(freq_list[4][1], "LANDO", "Frequent Words", graph_colors[4])
-make_wordcloud(hero_pos_words[4][1:], "LANDO", "Positive Words", graph_colors[4])
-make_wordcloud(hero_neg_words[4][1:], "LANDO", "Negative Words", graph_colors[4])
+# #5 nGrams, All Words, Pos Words, Neg Words
+make_wordcloud(list_dict_grams_sorted[4][1], graph_name_values[4], "Trigrams", graph_colors[4])
+make_wordcloud(freq_list[4][1], graph_name_values[4], "Frequent Words", graph_colors[4])
+make_wordcloud(hero_pos_words[4][1:], graph_name_values[4], "Positive Words", graph_colors[4])
+make_wordcloud(hero_neg_words[4][1:], graph_name_values[4], "Negative Words", graph_colors[4])
 
-# Vader nGrams, All Words, Pos Words, Neg Words
-make_wordcloud(list_dict_grams_sorted[5][1], "VADER", "Trigrams", graph_colors[5])
-make_wordcloud(freq_list[5][1], "VADER", "Frequent Words", graph_colors[5])
-make_wordcloud(hero_pos_words[5][1:], "VADER", "Positive Words", graph_colors[5])
-make_wordcloud(hero_neg_words[5][1:], "VADER", "Negative Words", graph_colors[5])
+# #6 nGrams, All Words, Pos Words, Neg Words
+make_wordcloud(list_dict_grams_sorted[5][1], graph_name_values[5], "Trigrams", graph_colors[5])
+make_wordcloud(freq_list[5][1], graph_name_values[5], "Frequent Words", graph_colors[5])
+make_wordcloud(hero_pos_words[5][1:], graph_name_values[5], "Positive Words", graph_colors[5])
+make_wordcloud(hero_neg_words[5][1:], graph_name_values[5], "Negative Words", graph_colors[5])
 
-# Yoda nGrams, All Words, Pos Words, Neg Words
-make_wordcloud(list_dict_grams_sorted[6][1], "YODA", "Trigrams", graph_colors[6])
-make_wordcloud(freq_list[6][1], "YODA", "Frequent Words", graph_colors[6])
-make_wordcloud(hero_pos_words[6][1:], "YODA", "Positive Words", graph_colors[6])
-make_wordcloud(hero_neg_words[6][1:], "YODA", "Negative Words", graph_colors[6])'''
+# #7 nGrams, All Words, Pos Words, Neg Words
+make_wordcloud(list_dict_grams_sorted[6][1], graph_name_values[6], "Trigrams", graph_colors[6])
+make_wordcloud(freq_list[6][1], graph_name_values[6], "Frequent Words", graph_colors[6])
+make_wordcloud(hero_pos_words[6][1:], graph_name_values[6], "Positive Words", graph_colors[6])
+make_wordcloud(hero_neg_words[6][1:], graph_name_values[6], "Negative Words", graph_colors[6])
 
 
 
