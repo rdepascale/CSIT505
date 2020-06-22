@@ -294,7 +294,7 @@ def two_tfidf(gram, lines, n, m, csv):
     denselist = dense.tolist()
     df = pd.DataFrame(denselist, columns=feature_names )
     if csv == True:
-        df.to_csv(str(gram[n][0])+"_tfidf.csv", index = True, header = True)    # Saved as {NAME}_tfidf.csv
+        df.to_csv(film+"_"+str(gram[n][0])+"_tfidf.csv", index = True, header = True)    # Saved as {NAME}_tfidf.csv
     print("\n",gram[n][0],"\n",df)                                              # print character name and datatable
     return(df)                                                                  # DataFrame can be stored for additional variable if desired
 
@@ -322,7 +322,7 @@ def hero_tfidf(gram, lines, m, csv):
     denselist = dense.tolist()
     df2 = pd.DataFrame(denselist, columns=feature_names )
     if csv == True:
-        df2.to_csv("hero_tfidf.csv", index = True, header = True)   # DataFrame saved to CSV, index & header true preserves row & column names
+        df2.to_csv(film+"_hero_tfidf.csv", index = True, header = True)   # DataFrame saved to CSV, index & header true preserves row & column names
     return(df2)                                                     # DataFrame can be stored for additional variable if desired
 
 # Datasets to be used in analysis
@@ -461,7 +461,7 @@ hero_neg_words = hero_words(neg_word_tally)
 # title used for file saving
 # color is optional
 #def make_wordcloud(words, name, title, color = None):
-
+'''
 # send list where sublist has first two elements [word, count] to generate wordcloud
 make_wordcloud(pos_words, "All Characters", "Positive Words")   # Generate WordCloud of ALL Positive Words
 make_wordcloud(neg_words, "All Characters", "Negative Words")   # Generate WordCloud of ALL Negative Words
@@ -510,7 +510,7 @@ make_wordcloud(list_dict_grams_sorted[6][1], graph_name_values[6], "Trigrams", g
 make_wordcloud(freq_list[6][1], graph_name_values[6], "Frequent Words", graph_colors[6])
 make_wordcloud(hero_pos_words[6][1:], graph_name_values[6], "Positive Words", graph_colors[6])
 make_wordcloud(hero_neg_words[6][1:], graph_name_values[6], "Negative Words", graph_colors[6])
-
+'''
 
 
 ''' TF-IDF Section ''' '''
