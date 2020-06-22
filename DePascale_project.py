@@ -18,10 +18,6 @@ from nltk import ngrams
 from wordcloud import WordCloud, STOPWORDS
 from collections import Counter
 
-# operator
-# allows us to create more advanced sorting based on sublist element
-# sorted(list_name, key = operator.itemgetter(sublist element number)) <= ascending order
-# sorted(list_name, key = operator.itemgetter(sublist element number), reverse = True) <= descending order
 
 # function to remove sublists providing the nth index in the sublist is zero
 def trim_list( list_name, n ):
@@ -36,6 +32,7 @@ def trim_list( list_name, n ):
             break
     return(list_name)
 
+
 # import words from dataset to list split at ',' and make lowercase
 def read_words(word_str):
     with open(word_str, 'r') as file:
@@ -46,6 +43,7 @@ def read_words(word_str):
         words[i] = [words[i], 0]
     return words
 
+
 # create count of word form word_list by iterating through the list_lines
 def word_count(word_list):
     for i in range( len(list_lines) ):
@@ -54,6 +52,7 @@ def word_count(word_list):
                 word_list[j][1] += 1                    # count is incremented by 1
                 word_list[j].append(list_lines[i][0])   # append name of speaker of word
     return(word_list)
+
 
 # format trimed word list as [ [word, count], [character1, count], [character2, count], etc.]
 def word_tally(word_list):
@@ -72,6 +71,7 @@ def word_tally(word_list):
                 tally[i].append([word_list[i][j], count])       # append speaker and wordcount to sublist
                 count = 1                                       # reset the count
     return(tally)                                               # return final list
+
 
 # take list of [character, line#, word# ] and amend to have count of pos/neg word in substring
 # tally should be list_tally
@@ -106,6 +106,7 @@ def name_grams(list_grams, sub_grams):
             sub_grams.append(list_grams[a:i+1]) # appends next NAME to first element in next sublist
     return(list_grams, sub_grams)
 
+
 # takes a blank list as input and populates it with sublist of ['NAME', {dict of trigrams}]
 # sorted output has dictionaries of keys where value is 1 removed
 def dict_grams(list_dict_grams, list_dict_grams_sorted):
@@ -129,12 +130,14 @@ def dict_grams(list_dict_grams, list_dict_grams_sorted):
         list_dict_grams_sorted.append([graph_name_values[n], dict(ldg_sort)])
     return(list_dict_grams, list_dict_grams_sorted)
 
+
 # send list of word count which will be changed to a dictionary with
 # key [name] : value [count] that is turned into a wordcloud
 # len(list) used max word size
+# name is name of character
 # title used for file saving
 # color is optional
-def make_wordcloud(words, color = None):
+def make_wordcloud(words, name, title, color = None):
     if color == None:
         color = "white"
     word_dict = {}                              # create temporary empty dictionary
@@ -152,10 +155,13 @@ def make_wordcloud(words, color = None):
         max_words = len(words), min_font_size = 12,
         scale = 3, normalize_plurals = False, stopwords = set(STOPWORDS)).generate_from_frequencies(word_dict)
     fig = plt.figure(1, figsize = (8, 4), dpi = 200)
-    plt.axis('off')
-    plt.imshow(wc)
-    plt.show()
+    wc.to_file(name+"_"+title+"_"+"wordCloud.png")
+#    comment line above and uncomment lines below to graph in program rather than save file
+#    plt.axis('off')
+#    plt.imshow(wc)
+#    plt.show()
     return()
+
 
 # Double Bar
 # Send list data series, strings for [xlabel, ylabel, title] and n value [7 = top 7 speakers, 8 = top 7 + "others"]
@@ -178,6 +184,7 @@ def double_bar(legend1, data1, legend2, data2, xlabel, ylabel, title, n):
     plt.show()
     return
 
+
 # Single Bar Graph
 # Send list data series, strings for [xlabel, ylabel, title] and n value [7 = top 7 speakers, 8 = top 7 + "others"]
 def single_bar(data, xlabel, ylabel, title, n):
@@ -194,6 +201,7 @@ def single_bar(data, xlabel, ylabel, title, n):
     plt.show()
     return
 
+
 # Pie Chart
 # Send list data series, string for title, and n value [7 = top 7 speaker,s 8 = top 7 + "others"]
 # https://matplotlib.org/3.2.1/gallery/pie_and_polar_charts/pie_demo2.html#sphx-glr-gallery-pie-and-polar-charts-pie-demo2-py
@@ -208,12 +216,94 @@ def pie_chart(data, title, n):
     return
 
 
+# create a list of frequencies for each word a character speaks
+# words = sub_grams [character name, all text]
+# n = top n words to print
+def frequency(words):
+    a = []                              # create a list to store [name, dictionary] in sublists elements
+    for i in range( len(words)):        # iterate over the list
+        d = dict(Counter(words[i][1:])) # create a dictionary of key: word, value: count
+        a.append( [ words[i][0], d ] )  # append [character name, dictionary] to sublist elements
+        b = []                          # create empty list for sorting
+        for k, v in d.items():          # iterate over key, value in dictionary
+            b.append([k,v])             # append to list b sublist [key, value]
+            a[i][1] = sorted(b, key = operator.itemgetter(1), reverse = True)   # reverse sort list b, replace dictionary in list a with sorted list b [word, count]
+    return(a)                           # return a so that freq_list can be populated
+
+
+# create a list of frequencies for each character and the positive/negative words
+# to be returned for WordCloud
+# words = pos_ or neg_word_tally
+def hero_words(words):
+    h_words = []
+    for i in range( len(graph_name_values)-1 ):
+        h_words.append( [ graph_name_values[i] ] )
+    for n in range( len(h_words) ):
+        for i in range( len(words) ):
+            for j in range(1, len(words[i]) ):
+                if h_words[n][0] == words[i][j][0]:
+                    h_words[n].append( [words[i][0][0], words[i][j][1]] )
+    return(h_words)
+
+
+# https://towardsdatascience.com/natural-language-processing-feature-engineering-using-tf-idf-e8b9d00e7e76
+# Function to specify a SPECIFIC character to compare against the script.
+# gram = sub_grams = [character name, every word they say in the script]
+# lines = list_lines = [character name, line of dialog]
+# n = character in top 7 from sub_grams (0 to 6)
+# m = max number of words returned (None disables this)
+def two_tfidf(gram, lines, n, m, csv):
+    this_string = ''                    # this_string = string of all specified HERO dialog
+    this_string = ' '.join(gram[n][1:]) # joins all elements of specified HERO dialog as string separated by ' '
+    that_string = ''                    # that_string = string of ALL dialog
+    for i in range(len(lines)):         # iterates through whole script joining all elements of dialog as string seperated by ' '
+        that_string += ' '.join(lines[i][1:])
+    # max_features are maximum number of words sent in by user, None instaed of int will show all words
+    vectorizer = TfidfVectorizer( stop_words='english', max_features = m)
+    # begin creation of table comparing specified hero vs whole script
+    vectors = vectorizer.fit_transform([this_string, that_string])
+    feature_names = vectorizer.get_feature_names()
+    dense = vectors.todense()
+    denselist = dense.tolist()
+    df = pd.DataFrame(denselist, columns=feature_names )
+    if csv == True:
+        df.to_csv(str(gram[n][0])+"_tfidf.csv", index = True, header = True)    # Saved as {NAME}_tfidf.csv
+    print("\n",gram[n][0],"\n",df)                                              # print character name and datatable
+    return(df)                                                                  # DataFrame can be stored for additional variable if desired
+
+# https://towardsdatascience.com/natural-language-processing-feature-engineering-using-tf-idf-e8b9d00e7e76
+# Function to compare all top7 characters with the whole script
+# gram = sub_grams = [character name, every word they say in the script]
+# lines = list_lines = [character name, line of dialog]
+# m = max number of words returned (None disables this)
+# hero = list of string that is all top 7 characters for each index used to create table of ALL characters vs script
+def hero_tfidf(gram, lines, m, csv):
+    # hero = list of string that is all top 7 characters for each index used to create table of ALL characters vs script
+    hero = []
+    # that_string = string of ALL dialog
+    that_string = ''
+    for i in range(len(gram)):
+        hero.append(' '.join(gram[i][1:]))      # Iterate through all HERO entries and append elements of text to new element of string separated by ' '
+    for i in range(len(lines)):
+        that_string += ' '.join(lines[i][1:])   # iterates through whole script joining all elements of dialog as string seperated by ' '
+    # max_features are maximum number of words sent in by user, None instaed of int will show all words
+    vectorizer = TfidfVectorizer( stop_words='english', max_features = m)
+    # begin creation of table comparing ALL heros with the script
+    vectors = vectorizer.fit_transform([hero[0], hero[1], hero[2], hero[3], hero[4], hero[5], hero[6], that_string])
+    feature_names = vectorizer.get_feature_names()
+    dense = vectors.todense()
+    denselist = dense.tolist()
+    df2 = pd.DataFrame(denselist, columns=feature_names )
+    if csv == True:
+        df2.to_csv("hero_tfidf.csv", index = True, header = True)   # DataFrame saved to CSV, index & header true preserves row & column names
+    return(df2)                                                     # DataFrame can be stored for additional variable if desired
+
 # Datasets to be used in analysis
 file_str = "datasets/datasets_25491_32521_SW_EpisodeV.txt"
 pos_word_str = "datasets/positive_words.txt"
 neg_word_str = "datasets/negative_words.txt"
 
-''' Star Wars Episode V Script '''
+''' Import/Set-Up Star Wars Episode V Script '''
 # read script into a list for manipulation
 # split at space, text lowercase, no punctuation
 # translate() adapted from:
@@ -340,98 +430,84 @@ list_dict_grams = []
 list_dict_grams_sorted = []
 dict_grams(list_dict_grams, list_dict_grams_sorted)
 
-# frequencies
-# words = sub_grams [character name, all text]
-# n = top n words to print
-def frequency(words):
-    a = []
-    for i in range( len(words)):
-        d = dict(Counter(words[i][1:]))
-        a.append( [ words[i][0], d ] )
-        b = []
-        for k, v in d.items():
-            b.append([k,v])
-            a[i][1] = sorted(b, key = operator.itemgetter(1), reverse = True)
-    return(a)
+# create a list organized by [ [NAME1, [word1, count], [word2, count], etc], [NAME2, [word1, count], [word2, count], etc.] ]
+# this word frequency list is used to create a wordcloud for top words of each character
+# the list is also sorted so that when printed it is in descending order
 freq_list = frequency(sub_grams)
-'''
-for i in range( len(freq_list) ):
-    make_wordcloud( freq_list[i][1], graph_colors[i] )
-'''
+
+# create list of [NAME1, [sublist of word, count]], [NAME2, [sublist of word, count]]
+hero_pos_words = hero_words(pos_word_tally)
+hero_neg_words = hero_words(neg_word_tally)
+
 ''' WordCloud Section '''
-'''
+# name is name of character
+# title used for file saving
+# color is optional
+#def make_wordcloud(words, name, title, color = None):
+
 # send list where sublist has first two elements [word, count] to generate wordcloud
-make_wordcloud(pos_words)                       # Positive Words
-make_wordcloud(neg_words)                       # Negative Words
+make_wordcloud(pos_words, "All Characters", "Positive Words")   # Generate WordCloud of ALL Positive Words
+make_wordcloud(neg_words, "All Characters", "Negative Words")   # Generate WordCloud of ALL Negative Words
+
+# function to print ALL four WordClouds for ALL Top 7 Charactesr
+def all_wordcloud():
+    wc_titles = ['Trigrams', 'Frequent_Words', 'Positive_Words', 'Negative_Words']
+    for i in range( len(graph_name_values)-1 ):
+        for j in range( len(wc_titles) ):
+            make_wordcloud(list_dict_grams_sorted[0][i], graph_name_values[i], wc_titles[j], graph_colors[i])
+            make_wordcloud(freq_list[0][i], graph_name_values[i], wc_titles[j], graph_colors[i])
+            make_wordcloud(hero_pos_words[0][i:], graph_name_values[i], wc_titles[j], graph_colors[i])
+            make_wordcloud(hero_neg_words[0][i:], graph_name_values[i], wc_titles[j], graph_colors[i])
+    return()
+
+'''
 # if a dictionary is sent the function will recognize this and adjust it to the needed
 # sublist [string of key, value] setup to work properly
 # Han nGrams, All Words, Pos Words, Neg Words
-make_wordcloud(list_dict_grams_sorted[0][1])
-make_wordcloud(freq_list[0][1], graph_colors[0])
+make_wordcloud(list_dict_grams_sorted[0][1], "HAN", "Trigrams", graph_colors[0])
+make_wordcloud(freq_list[0][1], "HAN", "Frequent Words", graph_colors[0])
+make_wordcloud(hero_pos_words[0][1:], "HAN", "Positive Words", graph_colors[0])
+make_wordcloud(hero_neg_words[0][1:], "HAN", "Negative Words", graph_colors[0])
 
 # Luke nGrams, All Words, Pos Words, Neg Words
-make_wordcloud(list_dict_grams_sorted[1][1])
-make_wordcloud(freq_list[1][1], graph_colors[1])
+make_wordcloud(list_dict_grams_sorted[1][1], "LUKE", "Trigrams", graph_colors[1])
+make_wordcloud(freq_list[1][1], "LUKE", "Frequent Words", graph_colors[1])
+make_wordcloud(hero_pos_words[1][1:], "LUKE", "Positive Words", graph_colors[1])
+make_wordcloud(hero_neg_words[1][1:], "Luke", "Negative Words", graph_colors[1])
 
 # Leia nGrams, All Words, Pos Words, Neg Words
-make_wordcloud(list_dict_grams_sorted[2][1])
-make_wordcloud(freq_list[2][1], graph_colors[2])
+make_wordcloud(list_dict_grams_sorted[2][1], "LEIA", "Trigrams", graph_colors[2])
+make_wordcloud(freq_list[2][1], "LEIA", "Frequent Words", graph_colors[2])
+make_wordcloud(hero_pos_words[2][1:], "LEIA", "Positive Words", graph_colors[2])
+make_wordcloud(hero_neg_words[2][1:], "LEIA", "Negative Words", graph_colors[2])
 
 # Threepio nGrams, All Words, Pos Words, Neg Words
-make_wordcloud(list_dict_grams_sorted[3][1])
-make_wordcloud(freq_list[3][1], graph_colors[3])
+make_wordcloud(list_dict_grams_sorted[3][1], "THREEPIO", "Trigrams", graph_colors[3])
+make_wordcloud(freq_list[3][1], "THREEPIO", "Frequent Words", graph_colors[3])
+make_wordcloud(hero_pos_words[3][1:], "THREEPIO", "Positive Words", graph_colors[3])
+make_wordcloud(hero_neg_words[3][1:], "THREEPIO", "Negative Words", graph_colors[3])
 
 # Lando nGrams, All Words, Pos Words, Neg Words
-make_wordcloud(list_dict_grams_sorted[4][1])
-make_wordcloud(freq_list[4][1], graph_colors[4])
+make_wordcloud(list_dict_grams_sorted[4][1], "LANDO", "Trigrams", graph_colors[4])
+make_wordcloud(freq_list[4][1], "LANDO", "Frequent Words", graph_colors[4])
+make_wordcloud(hero_pos_words[4][1:], "LANDO", "Positive Words", graph_colors[4])
+make_wordcloud(hero_neg_words[4][1:], "LANDO", "Negative Words", graph_colors[4])
 
 # Vader nGrams, All Words, Pos Words, Neg Words
-make_wordcloud(list_dict_grams_sorted[5][1])
-make_wordcloud(freq_list[5][1], graph_colors[5])
+make_wordcloud(list_dict_grams_sorted[5][1], "VADER", "Trigrams", graph_colors[5])
+make_wordcloud(freq_list[5][1], "VADER", "Frequent Words", graph_colors[5])
+make_wordcloud(hero_pos_words[5][1:], "VADER", "Positive Words", graph_colors[5])
+make_wordcloud(hero_neg_words[5][1:], "VADER", "Negative Words", graph_colors[5])
 
 # Yoda nGrams, All Words, Pos Words, Neg Words
-make_wordcloud(list_dict_grams_sorted[6][1])
-make_wordcloud(freq_list[6][1], graph_colors[6])
+make_wordcloud(list_dict_grams_sorted[6][1], "YODA", "Trigrams", graph_colors[6])
+make_wordcloud(freq_list[6][1], "YODA", "Frequent Words", graph_colors[6])
+make_wordcloud(hero_pos_words[6][1:], "YODA", "Positive Words", graph_colors[6])
+make_wordcloud(hero_neg_words[6][1:], "YODA", "Negative Words", graph_colors[6])
 '''
-
 ''' TF-IDF Section '''
-# https://towardsdatascience.com/natural-language-processing-feature-engineering-using-tf-idf-e8b9d00e7e76
-# use sub_grams vs entire script to find unique words from each top7 and compare those vs the whole script?
-# list_lines has everything in it, you need to just prune out the speaker names and drop the sublists
-# gram = sub_grams = [character name, every word they say in the script]
-# lines = list_lines = [character name, line of dialog]
-# n = character in top 7 from sub_grams (0 to 6)
-# m = max number of words returned (None disables this)
-# this_string = string of all specified HERO dialog
-# that_string = string of ALL dialog
-def two_tfidf(gram, lines, n, m):
-    this_string = ''
-    this_string = ' '.join(gram[n][1:])
-    that_string = ''
-    for i in range(len(lines)):
-        that_string += ' '.join(lines[i][1:])
-    vectorizer = TfidfVectorizer( stop_words='english', max_features = m)
-    vectors = vectorizer.fit_transform([this_string, that_string])
-    feature_names = vectorizer.get_feature_names()
-    dense = vectors.todense()
-    denselist = dense.tolist()
-    df = pd.DataFrame(denselist, columns=feature_names )
-    print("\n",gram[n][0],"\n",df)   
-    return(df)
-'''
-temp_tfidf = []
-for i in range( len(sub_grams)):
-    temp_tfidf.append(prep_tfidf(sub_grams, list_lines, i, 10))
-'''
-def hero_tfidf(gram, m):
-    hero = []
-    for i in range(len(gram)):
-        hero.append(' '.join(gram[i][1:]))
-    vectorizer = TfidfVectorizer( stop_words='english', max_features = m, min_df = 0.1)
-    vectors = vectorizer.fit_transform([hero[0], hero[1], hero[2], hero[3], hero[4], hero[5], hero[6]])
-    feature_names = vectorizer.get_feature_names()
-    dense = vectors.todense()
-    denselist = dense.tolist()
-    df2 = pd.DataFrame(denselist, columns=feature_names )
-    return(df2)
-temp = hero_tfidf(sub_grams, None)
+# Create TF-IDF table for Lando limited to top 10 words, save as LANDO_tfidf.csv for example
+two_tfidf(sub_grams, list_lines, 4, 10, True)
+
+# Create TF-IDF table for top 7 limsted to top 10 words, save as hero_tfidf.csv for example
+hero_tfidf(sub_grams, list_lines, 10, True)
