@@ -34,6 +34,8 @@ def trim_list( list_name, n ):
 
 
 # import words from dataset to list split at ',' and make lowercase
+# word_str = pos_word_str or neg_word_str
+# words = pos_words or neg_words
 def read_words(word_str):
     with open(word_str, 'r') as file:
         words = file.read().lower().split(',')
@@ -121,12 +123,13 @@ def dict_grams(list_dict_grams, list_dict_grams_sorted):
         i = 0
         while True:
             try:
-                if ldg_sort[i][1] < 2:
-                    del ldg_sort[i]
+                if ldg_sort[i][1] < 2:  # check if the value of the former key was 1
+                    del ldg_sort[i]     # delete said entry, we want values greater than 1 remaining
                 else:
-                        i += 1
-            except IndexError:
+                        i += 1          # iterate i
+            except IndexError:          # catch IndexError and end loop
                 break
+        # append character [character name, dictionary] to sorted list
         list_dict_grams_sorted.append([graph_name_values[n], dict(ldg_sort)])
     return(list_dict_grams, list_dict_grams_sorted)
 
@@ -138,7 +141,7 @@ def dict_grams(list_dict_grams, list_dict_grams_sorted):
 # title used for file saving
 # color is optional
 def make_wordcloud(words, name, title, color = None):
-    if color == None:
+    if color == None:                           # handle no color specified scenario
         color = "white"
     word_dict = {}                              # create temporary empty dictionary
     if type(words) == dict:                     # if a dictionary is sent in
@@ -155,7 +158,7 @@ def make_wordcloud(words, name, title, color = None):
         max_words = len(words), min_font_size = 12,
         scale = 3, normalize_plurals = False, stopwords = set(STOPWORDS)).generate_from_frequencies(word_dict)
     fig = plt.figure(1, figsize = (8, 4), dpi = 200)
-    wc.to_file(name+"_"+title+"_"+"wordCloud.png")
+    wc.to_file("WordCloud_"+name+"_"+title+".png")
 #    comment line above and uncomment lines below to graph in program rather than save file
 #    plt.axis('off')
 #    plt.imshow(wc)
@@ -181,7 +184,8 @@ def double_bar(legend1, data1, legend2, data2, xlabel, ylabel, title, n):
     ax.legend()
     fig.set_size_inches(11, 8.5)
     plt.grid(axis = 'y')
-    plt.show()
+    #plt.show()
+    plt.savefig(title+".png")
     return
 
 
@@ -198,7 +202,8 @@ def single_bar(data, xlabel, ylabel, title, n):
     fig.set_size_inches(11, 8.5)
     plt.bar(graph_name_values[0:n], data[0:n], color = graph_colors)
     plt.grid(axis = 'y')
-    plt.show()
+    #plt.show()
+    plt.savefig(title+".png")
     return
 
 
@@ -212,8 +217,30 @@ def pie_chart(data, title, n):
     fig.suptitle(title)
     ax.pie(data[0:n], labels = graph_name_values[0:n], autopct='%1.1f%%', shadow = True, colors = graph_colors[0:n])
     fig.set_size_inches(11, 8.5)
-    plt.show()
+    #plt.show()
+    plt.savefig(title+".png")
     return
+
+
+# simple function call to output all graphs as .png files in current working directory
+def create_graphs():
+    pie_chart(graph_line_values, 'Episode V Percentage of Line Count Share Top 8', 8)
+    pie_chart(graph_line_values, 'Episode V Percentage of Line Count Share Top 7', 7)
+    pie_chart(graph_word_values, 'Episode V Percentage of Word Count Share Top 8', 8)
+    pie_chart(graph_word_values, 'Episode V Percentage of Word Count Share Top 7', 7)
+    pie_chart(graph_pos_values, 'Episode V Percentage of Positive Word Count Share Top 7', 7)
+    pie_chart(graph_neg_values, 'Episode V Percentage of Negative Word Count Share Top 7', 7)
+    double_bar('Lines', graph_line_values, 'Words', graph_word_values, 'Character', 'Count', 'Episode V Line & Word Counts per Character Top 8', 8)
+    double_bar('Lines', graph_line_values, 'Words', graph_word_values, 'Character', 'Count', 'Episode V Line & Word Counts per Character Top 7', 7)
+    single_bar(graph_word_values, 'Character', 'Count', 'Episode V Word Count per Character Top 8', 8)
+    single_bar(graph_word_values, 'Character', 'Count', 'Episode V Word Count per Character Top 7', 7)
+    single_bar(graph_pos_values, 'Character', 'Count', 'Episode V Positive Word Count per Character Top 8', 8)
+    single_bar(graph_pos_values, 'Character', 'Count', 'Episode V Positive Word Count per Character Top 7', 7)
+    single_bar(graph_neg_values, 'Character', 'Count', 'Episode V Negative Word Count per Character Top 8', 8)
+    single_bar(graph_neg_values, 'Character', 'Count', 'Episode V Negative Word Count per Character Top 7', 7)
+    double_bar('Positive Words', graph_pos_values, 'Negative Words', graph_neg_values, 'Character', 'Count', 'Episode V Positive & Negative Word Counts per Character Top 8', 8)
+    double_bar('Positive Words', graph_pos_values, 'Negative Words', graph_neg_values, 'Character', 'Count', 'Episode V Positive & Negative Word Counts per Character Top 7', 7)
+    return()
 
 
 # create a list of frequencies for each word a character speaks
@@ -347,6 +374,7 @@ while True:
     except IndexError:                              # IndexError means all non-unique entries trimmed
         break                                       # end the loop
 
+
 ''' Postiive and Negative Words '''
 # import dataset to lists
 pos_words = read_words(pos_word_str)
@@ -373,8 +401,12 @@ tally_amend(list_tally, neg_words, 4)
 # color codes sourced from
 # https://matplotlib.org/3.1.0/gallery/color/named_colors.html
 graph_colors = ['royalblue', 'orangered', 'green', 'gold', 'violet', 'silver', 'lightgreen', 'navajowhite']
+# create list sorted by index 1 of list_tally sublists in descending order
 line_values = sorted(list_tally, key = operator.itemgetter(1), reverse = True)
+# create list sorted by index 2 of list_tally sublists in descending order
 word_values = sorted(list_tally, key = operator.itemgetter(2), reverse = True)
+
+# initialize blank values for graphing
 graph_name_values = []
 graph_line_values = []
 graph_word_values = []
@@ -400,24 +432,7 @@ for i in range( 8, len(line_values) ):
     graph_word_values[7] += word_values[i][2]
     graph_pos_values[7] += line_values[i][3]
     graph_neg_values[7] += line_values[i][4]
-'''
-pie_chart(graph_line_values, 'Episode V Percentage of Line Count Share', 8)
-pie_chart(graph_line_values, 'Episode V Percentage of Line Count Share Top 7', 7)
-pie_chart(graph_word_values, 'Episode V Percentage of Word Count Share', 8)
-pie_chart(graph_word_values, 'Episode V Percentage of Word Count Share Top 7', 7)
-pie_chart(graph_pos_values, 'Episode V Percentage of Positive Word Count Share Top 7', 7)
-pie_chart(graph_neg_values, 'Episode V Percentage of Negative Word Count Share Top 7', 7)
-double_bar('Lines', graph_line_values, 'Words', graph_word_values, 'Character', 'Count', 'Episode V Line & Word Counts per Character', 8)
-double_bar('Lines', graph_line_values, 'Words', graph_word_values, 'Character', 'Count', 'Episode V Line & Word Counts per Character Top 7', 7)
-single_bar(graph_word_values, 'Character', 'Count', 'Episode V Word Count per Character', 8)
-single_bar(graph_word_values, 'Character', 'Count', 'Episode V Word Count per Character Top 7', 7)
-single_bar(graph_pos_values, 'Character', 'Count', 'Episode V Positive Word Count per Character', 8)
-single_bar(graph_pos_values, 'Character', 'Count', 'Episode V Positive Word Count per Character Top 7', 7)
-single_bar(graph_neg_values, 'Character', 'Count', 'Episode V Negative Word Count per Character', 8)
-single_bar(graph_neg_values, 'Character', 'Count', 'Episode V Negative Word Count per Character Top 7', 7)
-double_bar('Positive Words', graph_pos_values, 'Negative Words', graph_neg_values, 'Character', 'Count', 'Positive & Negative Word Counts per Character', 8)
-double_bar('Positive Words', graph_pos_values, 'Negative Words', graph_neg_values, 'Character', 'Count', 'Positive & Negative Word Counts per Character Top 7', 7)
-'''
+
 
 ''' nGrams Section '''
 # create a list with [character name, all text]
@@ -439,6 +454,7 @@ freq_list = frequency(sub_grams)
 hero_pos_words = hero_words(pos_word_tally)
 hero_neg_words = hero_words(neg_word_tally)
 
+
 ''' WordCloud Section '''
 # name is name of character
 # title used for file saving
@@ -446,20 +462,8 @@ hero_neg_words = hero_words(neg_word_tally)
 #def make_wordcloud(words, name, title, color = None):
 
 # send list where sublist has first two elements [word, count] to generate wordcloud
-make_wordcloud(pos_words, "All Characters", "Positive Words")   # Generate WordCloud of ALL Positive Words
-make_wordcloud(neg_words, "All Characters", "Negative Words")   # Generate WordCloud of ALL Negative Words
-
-# function to print ALL four WordClouds for ALL Top 7 Charactesr
-def all_wordcloud():
-    wc_titles = ['Trigrams', 'Frequent_Words', 'Positive_Words', 'Negative_Words']
-    for i in range( len(graph_name_values)-1 ):
-        for j in range( len(wc_titles) ):
-            make_wordcloud(list_dict_grams_sorted[0][i], graph_name_values[i], wc_titles[j], graph_colors[i])
-            make_wordcloud(freq_list[0][i], graph_name_values[i], wc_titles[j], graph_colors[i])
-            make_wordcloud(hero_pos_words[0][i:], graph_name_values[i], wc_titles[j], graph_colors[i])
-            make_wordcloud(hero_neg_words[0][i:], graph_name_values[i], wc_titles[j], graph_colors[i])
-    return()
-
+'''make_wordcloud(pos_words, "All Characters", "Positive Words")   # Generate WordCloud of ALL Positive Words
+make_wordcloud(neg_words, "All Characters", "Negative Words")   # Generate WordCloud of ALL Negative Words'''
 '''
 # if a dictionary is sent the function will recognize this and adjust it to the needed
 # sublist [string of key, value] setup to work properly
@@ -503,11 +507,13 @@ make_wordcloud(hero_neg_words[5][1:], "VADER", "Negative Words", graph_colors[5]
 make_wordcloud(list_dict_grams_sorted[6][1], "YODA", "Trigrams", graph_colors[6])
 make_wordcloud(freq_list[6][1], "YODA", "Frequent Words", graph_colors[6])
 make_wordcloud(hero_pos_words[6][1:], "YODA", "Positive Words", graph_colors[6])
-make_wordcloud(hero_neg_words[6][1:], "YODA", "Negative Words", graph_colors[6])
-'''
-''' TF-IDF Section '''
+make_wordcloud(hero_neg_words[6][1:], "YODA", "Negative Words", graph_colors[6])'''
+
+
+
+''' TF-IDF Section ''' '''
 # Create TF-IDF table for Lando limited to top 10 words, save as LANDO_tfidf.csv for example
 two_tfidf(sub_grams, list_lines, 4, 10, True)
 
 # Create TF-IDF table for top 7 limsted to top 10 words, save as hero_tfidf.csv for example
-hero_tfidf(sub_grams, list_lines, 10, True)
+hero_tfidf(sub_grams, list_lines, 10, True)'''
