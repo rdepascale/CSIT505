@@ -13,6 +13,23 @@ Analysis of Star Wars Episode V script to look for insights into characters base
 This is still a work in progress!
 #
 #
+# Milestone 3 Report - Update from 6/23/2020
+#
+
+# WIKI
+The Wiki is completed, please see for major documentation.
+
+# TF-IDF Work
+Two functions were written so that a single character in the Top 7 and ALL of the Top 7 characters can be compared against the entire script looking at a specified (or no) limit to the top number of words as well as the ability to save the results to a CSV file in the current working directory.
+
+# Graph Work
+A function was written to generate all double-bar, bar, and pie charts at once for a massive data output.
+
+# General Cleanup
+Some code (original script input/cleanup) that was not in a function was moved to a function call.  Additional script manipulations were moved to their own function calls.  WordCloud and Tf-Idf code left commented in main body as example code to run from console.
+
+#
+#
 # Milestone 2 Report - Update from 6/12/2020
 #
 # Graph Work
