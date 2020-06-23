@@ -19,18 +19,42 @@ from wordcloud import WordCloud, STOPWORDS
 from collections import Counter
 
 
-# function to remove sublists providing the nth index in the sublist is zero
-def trim_list( list_name, n ):
+# read script into a list for manipulation
+# split at space, text lowercase, no punctuation
+# translate() adapted from:
+# https://stackoverflow.com/questions/34293875/how-to-remove-punctuation-marks-from-a-string-in-python-3-x-using-translate
+def prepare_script(film):
+    with open(file_str, 'r') as file:
+        lines = [line.lower().translate( str.maketrans('', '', string.punctuation) ).split() for line in file]
+    del lines[0]                            # first element is not dialog
+    for i in range( len(lines) ):           # iterate through list of lines
+        del lines[i][0]                     # delete the first element in the sublist b/c it is a number
+        lines[i][0] = lines[i][0].upper()   # make the new first element uppercase b/c it is the speakers name
+    lines.sort()                            # sort the list alphabetically by speaker
+    return(lines)                           # return the list of lines to the main body
+
+
+#This will insert the character name and number of words into a new list
+def tally_lines(lines):
+    tally = []
+    for i in range( len(lines) ):
+        # inserts character name then the count of words by counting elements AFTER name in list
+        tally.append( [ lines[i][0], len(lines[i][1 : len(lines[0]) ] ) ] )
+        # inserts blank element between name and word count for purposes of line count
+        tally[i].insert(1,1)
+        # continuing from above we are adding in the line count and word count to the associated name
     i = 0
     while True:
         try:
-            if list_name[i][n] == 0:  # verify quantity is zero
-                del list_name[i]      # delete the entry
-            else:                     # i is only increased when the value is non-zero
+            if tally[i][0] == tally[i+1][0]:  # verify if the names are the same
+                tally[i][1] += 1              # increment the # of spoken lines
+                tally[i][2] += tally[i+1][2]  # sum the number of spoken words
+                del tally[i+1]                # delete the next entry
+            else:                             # i is only increased when the next entry name is unique
                 i += 1
-        except IndexError:            # an IndexError means we have trimmed all non-unique entries, end the loop
-            break
-    return(list_name)
+        except IndexError:                    # IndexError means all non-unique entries trimmed
+            break                             # end the loop
+    return(tally)
 
 
 # import words from dataset to list split at ',' and make lowercase
@@ -46,17 +70,21 @@ def read_words(word_str):
     return words
 
 
-# create count of word form word_list by iterating through the list_lines
-def word_count(word_list):
-    for i in range( len(list_lines) ):
-        for j in range( len(word_list) ):
-            if word_list[j][0] in list_lines[i]:        # if a match is found
-                word_list[j][1] += 1                    # count is incremented by 1
-                word_list[j].append(list_lines[i][0])   # append name of speaker of word
-    return(word_list)
+# function to remove sublists providing the nth index in the sublist is zero
+def trim_list( list_name, n ):
+    i = 0
+    while True:
+        try:
+            if list_name[i][n] == 0:  # verify quantity is zero
+                del list_name[i]      # delete the entry
+            else:                     # i is only increased when the value is non-zero
+                i += 1
+        except IndexError:            # an IndexError means we have trimmed all non-unique entries, end the loop
+            break
+    return(list_name)
 
 
-# format trimed word list as [ [word, count], [character1, count], [character2, count], etc.]
+# format trimmed word list as [ [word, count], [character1, count], [character2, count], etc.]
 def word_tally(word_list):
     tally = []                              
     for i in range(len(word_list)):                             # iterate through all elements in a given "row"          
@@ -73,6 +101,16 @@ def word_tally(word_list):
                 tally[i].append([word_list[i][j], count])       # append speaker and wordcount to sublist
                 count = 1                                       # reset the count
     return(tally)                                               # return final list
+
+
+# create count of word from word_list by iterating through the list_lines
+def word_count(word_list):
+    for i in range( len(list_lines) ):
+        for j in range( len(word_list) ):
+            if word_list[j][0] in list_lines[i]:        # if a match is found
+                word_list[j][1] += 1                    # count is incremented by 1
+                word_list[j].append(list_lines[i][0])   # append name of speaker of word
+    return(word_list)
 
 
 # take list of [character, line#, word# ] and amend to have count of pos/neg word in substring
@@ -92,34 +130,34 @@ def tally_amend(tally, words, n):
 
 # takes names of focus characters and creates a list with [name1, all dialog, name2, all dialog, etc.]
 # takes prior list and sublists [[name1, all dialog], [name1, all dialog], etc.]
-def name_grams(list_grams, sub_grams):
+def name_grams(lists, subs):
     # create list of [CHARACTER1, all dialog, CHARACTER2, all dialog, etc.]
     for i in range( len( graph_name_values )-1 ):
-        list_grams.append(graph_name_values[i])
+        lists.append(graph_name_values[i])
         for j in range( len( list_lines ) ):
             if list_lines[j][0] == graph_name_values[i]:
-                list_grams.extend( list_lines[j][1:] )
-    a = 0                                       # index 0 is first name in list_grams
-    for i in range( 1, len(list_grams) ):       # ignore index 0 as it is a NAME
-        if list_grams[i].isupper():             # when the current index is a NAME
-            sub_grams.append(list_grams[a:i])   # append a sublist from prior name to current name
-            a = i                               # store value of new NAME
-        elif i == len(list_grams)-1:            # captures end of iteration over list_grams
-            sub_grams.append(list_grams[a:i+1]) # appends next NAME to first element in next sublist
-    return(list_grams, sub_grams)
+                lists.extend( list_lines[j][1:] )
+    a = 0                             # index 0 is first name in list_grams
+    for i in range( 1, len(lists) ):  # ignore index 0 as it is a NAME
+        if lists[i].isupper():        # when the current index is a NAME
+            subs.append(lists[a:i])   # append a sublist from prior name to current name
+            a = i                     # store value of new NAME
+        elif i == len(lists)-1:       # captures end of iteration over list_grams
+            subs.append(lists[a:i+1]) # appends next NAME to first element in next sublist
+    return(lists, subs)
 
 
 # takes a blank list as input and populates it with sublist of ['NAME', {dict of trigrams}]
 # sorted output has dictionaries of keys where value is 1 removed
-def dict_grams(list_dict_grams, list_dict_grams_sorted):
+def dict_grams(grams, grams_sorted):
     for i in range( len(graph_name_values)-1 ):
         d = {}
         # adapted from https://stackoverflow.com/a/28304388
         for ngram, freq in nltk.collocations.TrigramCollocationFinder.from_words(sub_grams[i][1:]).ngram_fd.items():                                        # iterate over object
             d[ngram] = freq                # create key of trigram, value frequency
-        list_dict_grams.append([graph_name_values[i],d])
-    for n in range( len(list_dict_grams) ):
-        ldg_sort = sorted(list_dict_grams[n][1].items(), key = lambda kv:(kv[1], kv[0]), reverse = True)
+        grams.append([graph_name_values[i],d])
+    for n in range( len(grams) ):
+        ldg_sort = sorted(grams[n][1].items(), key = lambda kv:(kv[1], kv[0]), reverse = True)
         i = 0
         while True:
             try:
@@ -130,8 +168,37 @@ def dict_grams(list_dict_grams, list_dict_grams_sorted):
             except IndexError:          # catch IndexError and end loop
                 break
         # append character [character name, dictionary] to sorted list
-        list_dict_grams_sorted.append([graph_name_values[n], dict(ldg_sort)])
-    return(list_dict_grams, list_dict_grams_sorted)
+        grams_sorted.append([graph_name_values[n], dict(ldg_sort)])
+    return(grams, grams_sorted)
+
+
+# create a list of frequencies for each word a character speaks
+# words = sub_grams [character name, all text]
+def frequency(words):
+    a = []                              # create a list to store [name, dictionary] in sublists elements
+    for i in range( len(words)):        # iterate over the list
+        d = dict(Counter(words[i][1:])) # create a dictionary of key: word, value: count
+        a.append( [ words[i][0], d ] )  # append [character name, dictionary] to sublist elements
+        b = []                          # create empty list for sorting
+        for k, v in d.items():          # iterate over key, value in dictionary
+            b.append([k,v])             # append to list b sublist [key, value]
+            a[i][1] = sorted(b, key = operator.itemgetter(1), reverse = True)   # reverse sort list b, replace dictionary in list a with sorted list b [word, count]
+    return(a)                           # return a so that freq_list can be populated
+
+
+# create a list of frequencies for each character and the positive/negative words
+# to be returned for WordCloud
+# words = pos_ or neg_word_tally
+def hero_words(words):
+    h_words = []
+    for i in range( len(graph_name_values)-1 ):
+        h_words.append( [ graph_name_values[i] ] )
+    for n in range( len(h_words) ):
+        for i in range( len(words) ):
+            for j in range(1, len(words[i]) ):
+                if h_words[n][0] == words[i][j][0]:
+                    h_words[n].append( [words[i][0][0], words[i][j][1]] )
+    return(h_words)
 
 
 # send list of word count which will be changed to a dictionary with
@@ -164,6 +231,28 @@ def make_wordcloud(words, name, title, color = None):
 #    plt.imshow(wc)
 #    plt.show()
     return()
+
+# sending in empty lists to be populated with data and returned amended to main body
+def graph_values(name, line, word, pos, neg):
+   # top 7 characters in line and word are the same, focus on them for individual comparison
+   for i in range( 7 ):
+       name.append(line_values[i][0])
+       line.append(line_values[i][1])
+       word.append(word_values[i][2])
+       pos.append(word_values[i][3])
+       neg.append(word_values[i][4])
+   # all other characters occupy 8th slot as "others" to demonstrate main character share vs everyone not in top 7
+   name.append("OTHERS")
+   line.append(0)
+   word.append(0)
+   pos.append(0)
+   neg.append(0)
+   for i in range( 8, len(line_values) ):
+       line[7] += line_values[i][1]
+       word[7] += word_values[i][2]
+       pos[7] += word_values[i][3]
+       neg[7] += word_values[i][4]
+   return(name, line, word, pos, neg)
 
 
 # Double Bar
@@ -243,36 +332,6 @@ def create_graphs():
     return()
 
 
-# create a list of frequencies for each word a character speaks
-# words = sub_grams [character name, all text]
-# n = top n words to print
-def frequency(words):
-    a = []                              # create a list to store [name, dictionary] in sublists elements
-    for i in range( len(words)):        # iterate over the list
-        d = dict(Counter(words[i][1:])) # create a dictionary of key: word, value: count
-        a.append( [ words[i][0], d ] )  # append [character name, dictionary] to sublist elements
-        b = []                          # create empty list for sorting
-        for k, v in d.items():          # iterate over key, value in dictionary
-            b.append([k,v])             # append to list b sublist [key, value]
-            a[i][1] = sorted(b, key = operator.itemgetter(1), reverse = True)   # reverse sort list b, replace dictionary in list a with sorted list b [word, count]
-    return(a)                           # return a so that freq_list can be populated
-
-
-# create a list of frequencies for each character and the positive/negative words
-# to be returned for WordCloud
-# words = pos_ or neg_word_tally
-def hero_words(words):
-    h_words = []
-    for i in range( len(graph_name_values)-1 ):
-        h_words.append( [ graph_name_values[i] ] )
-    for n in range( len(h_words) ):
-        for i in range( len(words) ):
-            for j in range(1, len(words[i]) ):
-                if h_words[n][0] == words[i][j][0]:
-                    h_words[n].append( [words[i][0][0], words[i][j][1]] )
-    return(h_words)
-
-
 # https://towardsdatascience.com/natural-language-processing-feature-engineering-using-tf-idf-e8b9d00e7e76
 # Function to specify a SPECIFIC character to compare against the script.
 # gram = sub_grams = [character name, every word they say in the script]
@@ -323,60 +382,19 @@ def hero_tfidf(gram, lines, m, csv):
     df2 = pd.DataFrame(denselist, columns=feature_names )
     if csv == True:
         df2.to_csv(film+"_hero_tfidf.csv", index = True, header = True)   # DataFrame saved to CSV, index & header true preserves row & column names
-    return(df2)                                                     # DataFrame can be stored for additional variable if desired
+    return(df2)                                                           # DataFrame can be stored for additional variable if desired
 
+''' Main Program '''
 # Datasets to be used in analysis
 film = "SW_EpisodeV"
 file_str = "datasets/"+film+".txt"
 pos_word_str = "datasets/positive_words.txt"
 neg_word_str = "datasets/negative_words.txt"
 
-''' Import/Set-Up Star Wars Script '''
-# read script into a list for manipulation
-# split at space, text lowercase, no punctuation
-# translate() adapted from:
-# https://stackoverflow.com/questions/34293875/how-to-remove-punctuation-marks-from-a-string-in-python-3-x-using-translate
-with open(file_str, 'r') as file:
-    list_lines = [line.lower().translate( str.maketrans('', '', string.punctuation) ).split() for line in file]
-file.close()
+list_lines = prepare_script(film)
+list_tally = tally_lines(list_lines)
 
-# delete first row of non-useful data in list_lines
-del list_lines[0]
-
-# first index in list_lines after first line is a number, remove it
-# character name is now first index, make it uppercase so that we can
-# differentiate with when they are mentioned in script if needed
-for i in range(len(list_lines)):
-    del list_lines[i][0]
-    list_lines[i][0] = list_lines[i][0].upper()
-
-# sort row to begin looking at calculations
-list_lines.sort()
-
-#This will insert the character name and number of words into a new list
-list_tally = []
-for i in range( len(list_lines) ):
-    # inserts character name then the count of words by counting elements AFTER name in list
-    list_tally.append( [ list_lines[i][0], len(list_lines[i][1 : len(list_lines[0]) ] ) ] )
-    # inserts blank element between name and word count for purposes of line count
-    list_tally[i].insert(1,1)
-
-
-# continuing from above we are adding in the line count and word count to the associated name
-i = 0
-while True:
-    try:
-        if list_tally[i][0] == list_tally[i+1][0]:  # verify if the names are the same
-            list_tally[i][1] += 1                   # increment the # of spoken lines
-            list_tally[i][2] += list_tally[i+1][2]  # sum the number of spoken words
-            del list_tally[i+1]                     # delete the next entry
-        else:                                       # i is only increased when the next entry name is unique
-            i += 1
-    except IndexError:                              # IndexError means all non-unique entries trimmed
-        break                                       # end the loop
-
-
-''' Postiive and Negative Words '''
+''' Positive and Negative Words '''
 # import dataset to lists
 pos_words = read_words(pos_word_str)
 neg_words = read_words(neg_word_str)
@@ -413,26 +431,7 @@ graph_line_values = []
 graph_word_values = []
 graph_pos_values = []
 graph_neg_values = []
-
-# top 7 characters in line and word are the same, focus on them for individual comparison
-for i in range( 7 ):
-    graph_name_values.append(line_values[i][0])
-    graph_line_values.append(line_values[i][1])
-    graph_word_values.append(word_values[i][2])
-    graph_pos_values.append(line_values[i][3])
-    graph_neg_values.append(line_values[i][4])
-
-# all other characters occupy 8th slot as "others" to demonstrate main character share vs everyone not in top 7
-graph_name_values.append("OTHERS")
-graph_line_values.append(0)
-graph_word_values.append(0)
-graph_pos_values.append(0)
-graph_neg_values.append(0)
-for i in range( 8, len(line_values) ):
-    graph_line_values[7] += line_values[i][1]
-    graph_word_values[7] += word_values[i][2]
-    graph_pos_values[7] += line_values[i][3]
-    graph_neg_values[7] += line_values[i][4]
+graph_values(graph_name_values, graph_line_values, graph_word_values, graph_pos_values, graph_neg_values)
 
 
 ''' nGrams Section '''
@@ -460,7 +459,7 @@ hero_neg_words = hero_words(neg_word_tally)
 # name is name of character
 # title used for file saving
 # color is optional
-#def make_wordcloud(words, name, title, color = None):
+# make_wordcloud(words, name, title, color = None)
 '''
 # send list where sublist has first two elements [word, count] to generate wordcloud
 make_wordcloud(pos_words, "All Characters", "Positive Words")   # Generate WordCloud of ALL Positive Words
@@ -470,7 +469,7 @@ make_wordcloud(neg_words, "All Characters", "Negative Words")   # Generate WordC
 # if a dictionary is sent the function will recognize this and adjust it to the needed
 # sublist [string of key, value] setup to work properly
 # #1 nGrams, All Words, Pos Words, Neg Words
-make_wordcloud(list_dict_grams_sorted[0][1], "HAN", "Trigrams", graph_colors[0])
+make_wordcloud(list_dict_grams_sorted[0][1], graph_name_values[0], "Trigrams", graph_colors[0])
 make_wordcloud(freq_list[0][1], graph_name_values[0], "Frequent Words", graph_colors[0])
 make_wordcloud(hero_pos_words[0][1:], graph_name_values[0], "Positive Words", graph_colors[0])
 make_wordcloud(hero_neg_words[0][1:], graph_name_values[0], "Negative Words", graph_colors[0])
@@ -514,7 +513,7 @@ make_wordcloud(hero_neg_words[6][1:], graph_name_values[6], "Negative Words", gr
 
 
 ''' TF-IDF Section ''' '''
-# Create TF-IDF table for Lando limited to top 10 words, save as LANDO_tfidf.csv for example
+# Create TF-IDF table for character in index 4 limited to top 10 words, save as [char name]_tfidf.csv for example
 two_tfidf(sub_grams, list_lines, 4, 10, True)
 
 # Create TF-IDF table for top 7 limsted to top 10 words, save as hero_tfidf.csv for example
