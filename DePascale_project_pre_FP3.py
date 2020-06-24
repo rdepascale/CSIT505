@@ -56,7 +56,7 @@ def word_count(word_list):
     return(word_list)
 
 
-# format trimed word list as [ [word, count], [character1, count], [character2, count], etc.]
+# format trimmed word list as [ [word, count], [character1, count], [character2, count], etc.]
 def word_tally(word_list):
     tally = []                              
     for i in range(len(word_list)):                             # iterate through all elements in a given "row"          
@@ -208,7 +208,7 @@ def single_bar(data, xlabel, ylabel, title, n):
 
 
 # Pie Chart
-# Send list data series, string for title, and n value [7 = top 7 speaker,s 8 = top 7 + "others"]
+# Send list data series, string for title, and n value [7 = top 7 speakers 8 = top 7 + "others"]
 # https://matplotlib.org/3.2.1/gallery/pie_and_polar_charts/pie_demo2.html#sphx-glr-gallery-pie-and-polar-charts-pie-demo2-py
 # https://matplotlib.org/3.2.1/gallery/subplots_axes_and_figures/subplots_demo.html
 def pie_chart(data, title, n):
@@ -285,7 +285,7 @@ def two_tfidf(gram, lines, n, m, csv):
     that_string = ''                    # that_string = string of ALL dialog
     for i in range(len(lines)):         # iterates through whole script joining all elements of dialog as string seperated by ' '
         that_string += ' '.join(lines[i][1:])
-    # max_features are maximum number of words sent in by user, None instaed of int will show all words
+    # max_features are maximum number of words sent in by user, None instead of int will show all words
     vectorizer = TfidfVectorizer( stop_words='english', max_features = m)
     # begin creation of table comparing specified hero vs whole script
     vectors = vectorizer.fit_transform([this_string, that_string])
@@ -376,12 +376,12 @@ while True:
         break                                       # end the loop
 
 
-''' Postiive and Negative Words '''
+''' Positive and Negative Words '''
 # import dataset to lists
 pos_words = read_words(pos_word_str)
 neg_words = read_words(neg_word_str)
 
-# get count of occurance of word type and append speaker
+# get count of occurrence of word type and append speaker
 word_count(pos_words)
 word_count(neg_words)
 
@@ -517,5 +517,5 @@ make_wordcloud(hero_neg_words[6][1:], graph_name_values[6], "Negative Words", gr
 # Create TF-IDF table for Lando limited to top 10 words, save as LANDO_tfidf.csv for example
 two_tfidf(sub_grams, list_lines, 4, 10, True)
 
-# Create TF-IDF table for top 7 limsted to top 10 words, save as hero_tfidf.csv for example
+# Create TF-IDF table for top 7 limited to top 10 words, save as hero_tfidf.csv for example
 hero_tfidf(sub_grams, list_lines, 10, True)'''
