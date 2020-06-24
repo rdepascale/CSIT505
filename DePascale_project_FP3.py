@@ -319,8 +319,8 @@ def create_graphs():
     pie_chart(graph_word_values, film[3:]+' Percentage of Word Count Share Top 7', 7)
     pie_chart(graph_pos_values, film[3:]+' Percentage of Positive Word Count Share Top 7', 7)
     pie_chart(graph_neg_values, film[3:]+' Percentage of Negative Word Count Share Top 7', 7)
-    double_bar('Lines', graph_line_values, 'Words', graph_word_values, 'Character', 'Count', 'Episode V Line & Word Counts per Character Top 8', 8)
-    double_bar('Lines', graph_line_values, 'Words', graph_word_values, 'Character', 'Count', 'Episode V Line & Word Counts per Character Top 7', 7)
+    double_bar('Lines', graph_line_values, 'Words', graph_word_values, 'Character', 'Count', film[3:]+' Line & Word Counts per Character Top 8', 8)
+    double_bar('Lines', graph_line_values, 'Words', graph_word_values, 'Character', 'Count', film[3:]+' Line & Word Counts per Character Top 7', 7)
     single_bar(graph_word_values, 'Character', 'Count', film[3:]+' Word Count per Character Top 8', 8)
     single_bar(graph_word_values, 'Character', 'Count', film[3:]+' Word Count per Character Top 7', 7)
     single_bar(graph_pos_values, 'Character', 'Count', film[3:]+' Positive Word Count per Character Top 8', 8)
@@ -386,7 +386,10 @@ def hero_tfidf(gram, lines, m, csv):
 
 ''' Main Program '''
 # Datasets to be used in analysis
-film = "SW_EpisodeV"
+# film = "SW_EpisodeIV"
+# film = "SW_EpisodeV"
+# film = "SW_EpisodeVI"
+film = "SW_Original_Trilogy"
 file_str = "datasets/"+film+".txt"
 pos_word_str = "datasets/positive_words.txt"
 neg_word_str = "datasets/negative_words.txt"
