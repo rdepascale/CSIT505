@@ -207,9 +207,15 @@ def hero_words(words):
 # name is name of character
 # title used for file saving
 # color is optional
-def make_wordcloud(words, name, title, color = None):
+def make_wordcloud(words, name, title, color = None, w = None, h = None, d = None):
     if color == None:                           # handle no color specified scenario
         color = "white"
+    if w == None:                               # handle no width specified scenario
+        w = 1600
+    if h == None:                               # handle no height specified scenario
+        h = 800
+    if d == None:                               # handle no DPI specified scenario
+        w = 200        
     word_dict = {}                              # create temporary empty dictionary
     if type(words) == dict:                     # if a dictionary is sent in
         temp = []                               # make a temporary list
@@ -221,16 +227,28 @@ def make_wordcloud(words, name, title, color = None):
     # generation from dictionary adapted from: https://stackoverflow.com/a/51895005
     wc = WordCloud(
         background_color=color, 
-        width = 1600, height = 800, 
+        width = w, height = h, 
         max_words = len(words), min_font_size = 12,
         scale = 3, normalize_plurals = False, stopwords = set(STOPWORDS)).generate_from_frequencies(word_dict)
-    fig = plt.figure(1, figsize = (8, 4), dpi = 200)
+    fig = plt.figure(1, figsize = (8, 4), dpi = d)
     wc.to_file(film+"_WordCloud_"+name+"_"+title+".png")
 #    comment line above and uncomment lines below to graph in program rather than save file
 #    plt.axis('off')
 #    plt.imshow(wc)
 #    plt.show()
     return()
+
+
+# simple function to create the four wordclouds for each top 7 character saved as a png file:
+# Trigrams, Frequent Words, Positive Words, Negative Words
+def bulk_clouds():
+    for i in range( len(graph_name_values)-1 ):
+        make_wordcloud(list_dict_grams_sorted[i][1], graph_name_values[i], "Trigrams", graph_colors[i])
+        make_wordcloud(freq_list[i][1], graph_name_values[i], "Frequent_Words", graph_colors[i])
+        make_wordcloud(hero_pos_words[i][1:], graph_name_values[i], "Positive_Words", graph_colors[i])
+        make_wordcloud(hero_neg_words[i][1:], graph_name_values[i], "Negative_Words", graph_colors[i])
+    return()
+
 
 # sending in empty lists to be populated with data and returned amended to main body
 def graph_values(name, line, word, pos, neg):
@@ -463,61 +481,29 @@ hero_neg_words = hero_words(neg_word_tally)
 # title used for file saving
 # color is optional
 # make_wordcloud(words, name, title, color = None)
-'''
+
 # send list where sublist has first two elements [word, count] to generate wordcloud
-make_wordcloud(pos_words, "All Characters", "Positive Words")   # Generate WordCloud of ALL Positive Words
-make_wordcloud(neg_words, "All Characters", "Negative Words")   # Generate WordCloud of ALL Negative Words
+# make_wordcloud(pos_words, "All_Characters", "Positive_Words")   # Generate WordCloud of ALL Positive Words
+# make_wordcloud(neg_words, "All_Characters", "Negative_Words")   # Generate WordCloud of ALL Negative Words
+
+
+# bulk_clouds() # creates four wordclouds for each Top 7 Character: trigrams, frequent words, pos words, neg words
 
 # Word Clouds for Top 7
 # if a dictionary is sent the function will recognize this and adjust it to the needed
-# sublist [string of key, value] setup to work properly
-# #1 nGrams, All Words, Pos Words, Neg Words
+# sublist [string of key, value] setup to work properly, make sure dictionary is [1:] not [1]
+# ex #1 in top 7 is index 0 this creates nGrams, All Words, Pos Words, Neg Words
+'''
 make_wordcloud(list_dict_grams_sorted[0][1], graph_name_values[0], "Trigrams", graph_colors[0])
-make_wordcloud(freq_list[0][1], graph_name_values[0], "Frequent Words", graph_colors[0])
-make_wordcloud(hero_pos_words[0][1:], graph_name_values[0], "Positive Words", graph_colors[0])
-make_wordcloud(hero_neg_words[0][1:], graph_name_values[0], "Negative Words", graph_colors[0])
-
-# #2 nGrams, All Words, Pos Words, Neg Words
-make_wordcloud(list_dict_grams_sorted[1][1], graph_name_values[1], "Trigrams", graph_colors[1])
-make_wordcloud(freq_list[1][1], graph_name_values[1], "Frequent Words", graph_colors[1])
-make_wordcloud(hero_pos_words[1][1:], graph_name_values[1], "Positive Words", graph_colors[1])
-make_wordcloud(hero_neg_words[1][1:], graph_name_values[1], "Negative Words", graph_colors[1])
-
-# #3 nGrams, All Words, Pos Words, Neg Words
-make_wordcloud(list_dict_grams_sorted[2][1], graph_name_values[2], "Trigrams", graph_colors[2])
-make_wordcloud(freq_list[2][1], graph_name_values[2], "Frequent Words", graph_colors[2])
-make_wordcloud(hero_pos_words[2][1:], graph_name_values[2], "Positive Words", graph_colors[2])
-make_wordcloud(hero_neg_words[2][1:], graph_name_values[2], "Negative Words", graph_colors[2])
-
-# #4 nGrams, All Words, Pos Words, Neg Words
-make_wordcloud(list_dict_grams_sorted[3][1], graph_name_values[3], "Trigrams", graph_colors[3])
-make_wordcloud(freq_list[3][1], graph_name_values[3], "Frequent Words", graph_colors[3])
-make_wordcloud(hero_pos_words[3][1:], graph_name_values[3], "Positive Words", graph_colors[3])
-make_wordcloud(hero_neg_words[3][1:], graph_name_values[3], "Negative Words", graph_colors[3])
-
-# #5 nGrams, All Words, Pos Words, Neg Words
-make_wordcloud(list_dict_grams_sorted[4][1], graph_name_values[4], "Trigrams", graph_colors[4])
-make_wordcloud(freq_list[4][1], graph_name_values[4], "Frequent Words", graph_colors[4])
-make_wordcloud(hero_pos_words[4][1:], graph_name_values[4], "Positive Words", graph_colors[4])
-make_wordcloud(hero_neg_words[4][1:], graph_name_values[4], "Negative Words", graph_colors[4])
-
-# #6 nGrams, All Words, Pos Words, Neg Words
-make_wordcloud(list_dict_grams_sorted[5][1], graph_name_values[5], "Trigrams", graph_colors[5])
-make_wordcloud(freq_list[5][1], graph_name_values[5], "Frequent Words", graph_colors[5])
-make_wordcloud(hero_pos_words[5][1:], graph_name_values[5], "Positive Words", graph_colors[5])
-make_wordcloud(hero_neg_words[5][1:], graph_name_values[5], "Negative Words", graph_colors[5])
-
-# #7 nGrams, All Words, Pos Words, Neg Words
-make_wordcloud(list_dict_grams_sorted[6][1], graph_name_values[6], "Trigrams", graph_colors[6])
-make_wordcloud(freq_list[6][1], graph_name_values[6], "Frequent Words", graph_colors[6])
-make_wordcloud(hero_pos_words[6][1:], graph_name_values[6], "Positive Words", graph_colors[6])
-make_wordcloud(hero_neg_words[6][1:], graph_name_values[6], "Negative Words", graph_colors[6])
+make_wordcloud(freq_list[0][1], graph_name_values[0], "Frequent_Words", graph_colors[0])
+make_wordcloud(hero_pos_words[0][1:], graph_name_values[0], "Positive_Words", graph_colors[0])
+make_wordcloud(hero_neg_words[0][1:], graph_name_values[0], "Negative_Words", graph_colors[0])
 '''
 
 
-''' TF-IDF Section ''' '''
+''' TF-IDF Section '''
 # Create TF-IDF table for character in index 4 limited to top 10 words, save as [film var value]_[char name]_tfidf.csv for example
-two_tfidf(sub_grams, list_lines, 4, 10, True)
+# two_tfidf(sub_grams, list_lines, 4, 10, True)
 
 # Create TF-IDF table for top 7 limited to top 10 words, save as [film var value]_hero_tfidf.csv for example
-hero_tfidf(sub_grams, list_lines, 10, True)'''
+# hero_tfidf(sub_grams, list_lines, 10, True)'''
