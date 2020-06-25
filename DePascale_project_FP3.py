@@ -230,9 +230,9 @@ def make_wordcloud(words, name, title, color = None, w = None, h = None, d = Non
         width = w, height = h, 
         max_words = len(words), min_font_size = 12,
         scale = 3, normalize_plurals = False, stopwords = set(STOPWORDS)).generate_from_frequencies(word_dict)
-    fig = plt.figure(1, figsize = (8, 4), dpi = d)
     wc.to_file(film+"_WordCloud_"+name+"_"+title+".png")
 #    comment line above and uncomment lines below to graph in program rather than save file
+#    fig = plt.figure(1, figsize = (8, 4), dpi = d)
 #    plt.axis('off')
 #    plt.imshow(wc)
 #    plt.show()
